@@ -1,0 +1,2335 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\language brazil
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Entendendo como funcionam ponteiros
+\layout Author
+
+Marcelo Elias Del Valle 
+\newline 
+
+\layout Right Address
+
+
+\begin_inset LatexCommand \url[marceloelias@iname.com]{mailto:marceloelias@iname.com}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Introdução
+\layout Paragraph
+
+Este documento tem o intuito de explicar como funcionam, exatamente, ponteiros
+ para áreas de memória.
+ Ponteiros são um recurso muito utilizado em programação em qualquer linguagem,
+ mas seu uso se faz mais expressivo quando usando linguagens de baixo nível.
+ Nesse documento, a linguagem utilizada será a linguagem C, devido a vários
+ fatores, dentre estes o fato de ser a mais largamente utilizada em qualquer
+ máquina e sistema operacional e também o fato de não impor restrições ao
+ programador com relação às possibilidades.
+\layout Section
+
+Pré-requisitos
+\layout Paragraph
+
+Presumo que o leitor desse documento já saiba o básico sobre programar em
+ linguagem C, saiba como usar variáveis e funçõese também conheça os tipos
+ básicos de dados (char, int, float, etc.).
+ Leitores com conhecimentos mais avançados e mesmo aqueles que já costumam
+ usar ponteiros também devem enxergar utilidade nesse documento, visto que
+ além de ensinar esse documento destina-se a tentar tirar as dúvidas mais
+ comuns que usuários costumam ter quando trabalhando com ponteiros.
+\layout Section
+
+Tipos e tamanhos de variáveis
+\layout Paragraph
+
+Do ponto de vista do programador C, é muito simples a utilização de variáveis.
+ Quando se quer usar um inteiro, o programador simplesmente declara que
+ quer usá-lo (int i, por exemplo) e atribui valores a esse inteiro.
+ Mas o que é um inteiro? É comum em cursos mais básicos de C o programador
+ aprender que um inteiro do tipo short (short int) pode apenas armazenar
+ valores de -32767 até 32768.
+ Mas a que se deve essa restrição?
+\layout Paragraph
+
+Tomemos como exemplo um pequeno programa escrito em linguagem C:
+\layout Description
+
+Exemplo 1
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+short int i;
+\layout Standard
+
+for (i=0; i<10; i++)
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+i=%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse programa apenas declara um inteiro e imprime 10 linhas na tela, cada
+ uma contendo um número de 0 à 9.
+ Para trasformar esse código em um programa, o leitor já deve saber que
+ é necessário usar um compilador.
+ O compilador, por sua vez, irá ler o código acima e então escrever um programa
+ em linguagem de máquina que faça o que está escrito.
+ A primeira coisa que o programador deve saber, então, é que o compilador
+ entende o código descrito acima de uma forma diferente daquela que nós,
+ humanos, entendemos.
+\layout Paragraph
+
+Para nós, esse programa parece apenas imprimir dez números.
+ Para o compilador, porém, ele faz algo mais: ele pede para o sistema operaciona
+l alocar memória para um inteiro curto (short int).
+ Um inteiro curto, como já deve ser sabido, ocupa dois bytes ou 16bits na
+ memória.
+ Por esse motivo é que um inteiro pode assumir valores na faixa de -32767
+ até 32768.
+ 16 bits significam 16 números que podem assumir valores 0 ou 1, ou seja,
+ duas combinações para cada bit.
+ Como são 16, temos dois elevado à 16 combinações possíveis, ou seja, 65536
+ combinações, o tanto de números que temos de -32767 até 32768.
+ 
+\layout Standard
+
+O fato é que para cada tipo de váriável, um tanto de espaço em memória é
+ utilizado.
+ Um short int usa dois bytes, um char usa apenas um byte, um float usa 6
+ bytes...
+ É importante que o leitor tenha essa noção bem definida antes de avançar
+ o tutorial.
+ Para saber o tamanho de um tipo de dado em C, podemos usar um programa
+ semelhante ao descrito abaixo:
+\layout Description
+
+Exemplo 2
+\layout Subparagraph
+
+#define TIPO (char)
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+O tamanho é %d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, sizeof(TIPO));
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O operador sizeof retorna o tamanho em bytes ocupado por um tipo de dado.
+ Apenas mude a diretiva #define acima para imprimir o tamanho de um tipo
+ de dado diferente.
+\layout Paragraph
+
+Pois bem, como dissemos acima, o compilador não apenas escreve instruções
+ para a máquina imprimir dez valores na tela.
+ O compilador também escreve instruções de máquina que pedem para o sistema
+ operacional que ele aloque a memória a ser utilizada.
+ No programa acima esse fato é transparente para op programador pois não
+ é necessário saber disso nessa situação.
+ Em muitas situações, contudo, é necessário não só termos ciência disso,
+ como também termos uma maneira de saber em que local da memória aquela
+ variável (nesse caso, aquele inteiro) foi alocada.
+ Esse fato será estudado a seguir.
+\layout Section
+
+Como as variáveis são alocadas na memória
+\layout Paragraph
+
+Tomemos novamente o caso do exemplo 1.
+ Imaginemos que um programador tenha digitado aquele texto em um arquivo
+ e pedido para o compilador transformá-lo em programa.
+ Em seguida, o programador executa o programa.
+ O momento em que o compilador transforma o texto em programa é chamado
+ de COMPILING TIME (tempo de compilação).
+ O momento em que o programador digita o texto é chamado de DESIGN TIME
+ (tempo de desenho).
+ O momento em que o programa roda é chamado de RUN TIME (tempo de execução).
+\layout Paragraph
+
+Em tempo de compilação, o compilador escreveu que a variável i deveria ser
+ alocada e que 2 bytes deveriam ser alocados para essa variável.
+ Em tempo de execução, logo após o usuário pedir para o sistema operacional
+ executar o programa, o sistema aloca os dois bytes, conforme escrito no
+ programa em linguagem de máquina, e devolve para o programa o local na
+ memória (endereço) onde esse inteiro foi alocado para o programa.
+ 
+\layout Paragraph
+
+No seu programa em linguagem C, você usa o E COMERCIAL (&) como operador
+ de endereço, isto é, você precede uma variável por esse operador quando
+ quer saber o endereço da mesma.
+ No exemplo 1, poderiamos usar &i para saber o endereço de memória onde
+ i foi alocado.
+ O programa a seguir imprime o endereço e o valor de uma variável chamada
+ i:
+\layout Description
+
+Exemplo 3:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int i;
+\layout Standard
+
+i=6;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+ O valor e i é %d e i está alocado no endereço %d na memória!
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, i, &i);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Pois bem, a essa altura o leitor já deve ter noção de que, quando falamos
+ em uma variável, não estamos falando apenas de seu valor, devemos sempre
+ ter em mente que aquela variável está sendo armazenada em algum lugar na
+ memória e que esse local na memória é o endereço da variável.
+ E o que é um endereço? É um número que contém a localização exata da variável
+ na memória, ou seja, que APONTA para a variável na memória.
+\layout Paragraph
+
+Pergunta (importante): De que tipo de variável é o endereço? ou seja, i
+ é um short int, mas e &i, é o quê? A resposta mais correta para essa pergunta
+ é 
+\begin_inset Quotes eld
+\end_inset 
+
+não sei
+\begin_inset Quotes erd
+\end_inset 
+
+! Em computadores mais antigos, &i era um inteiro sem sinal de 4bytes (de
+ 0 até 4294967296) .
+ Em computadores mais novos, contudo, 4 bytes não são suficientes para endereçar
+ toda a memória, então uma variável de tamanho maior é usada.
+ Esse detalhe é importantíssimo e é aí que a maioria das dúvidas com relação
+ a ponteiros são geradas.
+ 
+\layout Paragraph
+
+De forma mais clara, do mesmo jeito que existe um tipo de variável chamada
+ char e outra do tipo int, existe uma variável chamada 
+\begin_inset Quotes eld
+\end_inset 
+
+endereço
+\begin_inset Quotes erd
+\end_inset 
+
+, ou conforme o jargão, ponteiro.
+ Ponteiro nada mais é do que um tipo de variável que aponta para uma posição
+ de memória.
+ A seguir veremos mais sobre esse tipo de variável e sobre o seu uso.
+\layout Section
+
+Os ponteiros
+\layout Paragraph
+
+Como vimos na seção anterior, ponteiro é apenas um tipo de dado que aponta
+ para uma região na memória.
+ Em linguagem C, a sintaxe de declaração de variáveis do tipo ponteiro é
+ feita como segue:
+\layout Subparagraph
+
+tipo_de_variavel *nome_da_variavel;
+\layout Paragraph
+
+Por exemplo, declarações de ponteiros válidas seriam:
+\layout Subparagraph
+
+int *i;
+\layout Standard
+
+char *a;
+\layout Standard
+
+float *f;
+\layout Standard
+
+int *k[10];
+\layout Standard
+
+char *nomes[100];
+\layout Paragraph
+
+Quando declaramos uma variável como ponteiro, ou seja, com um asterísco
+ (no caso de linguagem C) entre o tipo de dado e o nome da variável, estamos
+ dizendo que o nome da variável não referencia o tipo de dado, mas um endereço
+ que aponta para aquele tipo.
+ Por exemplo, se declaramos i como:
+\layout Subparagraph
+
+char i;
+\layout Paragraph
+
+e j como:
+\layout Subparagraph
+
+char *j;
+\layout Paragraph
+
+Qual a diferença entre i e j? A diferença é que i é uma variável do tipo
+ char, ou seja, tem 1 byte, e j é uma variável do tipo ponteiro para char,
+ ou seja, tem o número de bytes suficiente para endereçar uma região na
+ memória.
+ *j, contúdo, refere-se a um char, contido no endereço de memória j.
+ O mapa de memória a seguir ilustra isso:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="2" columns="11">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+endereço:
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+0
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+4
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+5
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+6
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+7
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+8
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+9
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+conteudo:
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+i='a'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+'5'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+'y'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+'k'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+'z'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+'Z'
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+j=3
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(j)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(j)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(j)
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Paragraph
+
+No mapa, &i = 0 e &j = 6.
+ Nesse exemplo, considere j como sendo um endereço de 4 bytes (ou seja,
+ um endereço em um sistema onde 4 bytes são suficientes para endereçar a
+ memória).
+ i tem apenas um bytes, então ocupa apenas o endereço 0 (zero).
+ Como j tem 4 bytes, ocupa os endereços 6, 7, 8 e 9.
+ No exemplo, i='a' (um char de 1 bytes) e j = 3 (um inteiro de 32bits que
+ armazena o número 3).
+\layout Paragraph
+
+Grosso modo, dizemos que j aponta para o endereço 3.
+ Perceba que j foi declarado como (char *), mas na memória ocupa 4 bytes.
+ Isso porque (char *) é um ponteiro para char, ou seja, um endereço que
+ aponta para um caracter.
+ *j, por sua vez, é o conteúdo desse endereço.
+ Nesse exemplo, é o char contido no endereço 3, 'k'.
+ 
+\layout Paragraph
+
+Mas e se j tivesse sido declarado como um ponteiro para short int (short
+ int *)? O que seria j? Continuaria sendo o conteúdo dos endereços 6, 7,
+ 8 e 9, ou seja, um endereço que aponta para um int.
+ E o que seria &j? Seria o endereço onde esse endereço está armazenado,
+ ou seja, 6.
+ E o que seria *j? Seria o short int contido no endereço 3, ou seja, os
+ dois bytes contidos nos endereços 3 e 4: 'k' e 'z'.
+\layout Paragraph
+
+Esse é o básico sobre ponteiros.
+ É muito importante um bom programador não ter dúvidas em ponteiros, pois
+ ponteiros são usados em praticamente todas as aplicações sérias no tocante
+ à programação.
+ Não é possível criar estruturas de dados, como listas ligadas, tabelas
+ de espalhamento, árvores binárias e várias outras estruturas tão usadas
+ em programação.
+ Esse talvez seja o usomais frequente de ponteiros usado em programação.
+ Outro uso, que é passagem de valores para funções, será visto mais adiante.
+ Por hora, Vamos a alguns exercícios.
+\layout Subsection
+
+Exercícios
+\layout Itemize
+
+1.
+ Se i foi declarado da seguinte forma:
+\layout Subparagraph
+
+int *i;
+\layout Standard
+
+e sabendo que i=5, responda:
+\layout Standard
+
+Qual o significado do valor &i? Qual o tamanho de &i?
+\layout Standard
+
+Qual o significado e qual o tamanho de *i? Qual o tamanho de i?
+\layout Standard
+
+Se j foi declarado como
+\layout Standard
+
+int j;
+\layout Standard
+
+e &j=5 e j=10, quanto vale *i?
+\layout Standard
+
+(respostas: &i é o endereço de i e tem o tamanho de um endereço, ou de um
+ ponteiro.
+ *i é o conteúdo de i, ou a região da memória apontada por i e tem tamanho
+ de um inteiro, pois i foi declarado como (int *), ou seja, ocmo um ponteiro
+ para um inteiro.
+ O tamanho de i é também o tamanho de um endereço.
+ Se &j=5 e j=10, *i vale 10.)
+\layout Itemize
+
+2.
+ Ao terminar a sua execução, sabendo que &a=10 e &b=80, qual o valor, no
+ programa a seguir, de *b?
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+char a, *b;
+\layout Standard
+
+a=5;
+\layout Standard
+
+b = &a;
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Itemize
+
+3.
+ Qual o erro do programa a seguir? Escreva um programa semelhante que funcione
+ como deveria.
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *i;
+\layout Standard
+
+*i=5;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+*i=%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *i);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Subparagraph
+
+Resposta:
+\layout Standard
+
+O erro está em i não apontar para lugar nenhum.
+ *i é o conteúdo de que endereço? O programa a seguir corige o problema:
+\layout Standard
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *i, j;
+\layout Standard
+
+i=&j;
+\layout Standard
+
+*i=5;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+*i=%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *i);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Standard
+
+Como declaramos j como um inteiro, foi declarado memória para um inteiro
+ j no início do programa.
+ Se fizermos i apontar para essa variável, podemos alterar essa memória
+ alocada para j Perceba que quando fazemos *i=5 estamos alterando j para
+ 5 também, pois tanto *i quanto j podem ser entendidos como o conteúdo de
+ i ou de &j.
+\layout Section
+
+Funções - como funcionam de fato
+\layout Paragraph
+
+Ok, já vimos um pouco sobre como funcionam ponteiros.
+ Agora, para completarmos o nosso estudo, vamos ver um pouco mais sobre
+ funções e a seguir veremos o uso de ponteiros na passagem de parâmetros
+ de funções e um pouco sobre alocação dinâmica de memória.
+ Essa seção não é absolutamente necessária.
+ Se você achá-la muito complicada, pule para o último parágrafo e continue
+ na próxima seção.
+ A informação aqui contida é apresentada para que não fiquem dúvidas na
+ cabeça do leitor sobre como o programa está funcionando, de fato.
+\layout Standard
+
+Como vimos no início desse documento, sempre que declaramos variáveis em
+ um programa, o compilador escreve, em tempo de compilação, um código que
+ aloca memória para essas variáveis (que pede uma área de memória disponível
+ para o sistema operacional).
+ Imaginemos como fica essa questão de alocação no caso de funções.
+ Considere uma função declarada como segue:
+\layout Subparagraph
+
+void foo(short int arg1, char arg2, float arg3) {
+\layout Standard
+
+if (arg1==0)
+\layout Standard
+
+foo(1, 'b', 4.6);
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+args = %d %c %f
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, arg1, arg2, arg3);
+\layout Standard
+
+}
+\layout Paragraph
+
+Agora imagine o programa a seguir, que chama essa função uma vez:
+\layout Description
+
+Exemplo 4:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+foo(0, 'a', 4.5);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O programa acima chama a função duas vezes.
+ Pergunta: Quando e como foi alocada memória para os argumentos dessa função?
+ Poderiamos pensar que o compilador escreveu um código que pedisse ao sistema
+ operacional que alocasse um inteiro (int), um caracter (char) e um número
+ de precisão simples (float) no início do programa.
+ Contudo, ao olharmos mais atentamente para o programa acima, vemos que
+ isso não resolveria o problema, pois dentro da função foo há uma chamada
+ para ela mesma.
+ 
+\layout Paragraph
+
+Colocando isso em outras palavras, se o sistema operacional tivesse alocado
+ apenas um inteiro, um char e um float para a função, o que aconteceria
+ quando ela chamasse ela mesma? Vamos acompanhar o fluxo do programa para
+ entendermos melhor.
+ No início do programa, a função foo é chamada pela primeira vez.
+ Imaginemos que &arg1 fosse 1, &arg2 fosse 3 e &arg3 fosse 4.
+ Teriamos na memória:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="2" columns="10">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+0
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+4
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+5
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+6
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+7
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+8
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+9
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+arg1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg1)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+arg2
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+arg3
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg3)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg3)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg3)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg3)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(arg3)
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Paragraph
+
+Na chamada da função foo de dentro da função main, esse valores seriam alterados
+ para 0, 'a' e 4.5.
+ Dentro da função foo, era de se esperar então que a função foo novamente
+ fosse chamada com os novos argumentos, esses novos argumentos fossem impressos
+ e então fosse impresso 0, 'a' e 4.5.
+ Contudo, ao se passar os argumentos na segunda vez para a função foo, os
+ argumentos arg1, arg2 e arg3 seriam sobre-escritos e a saída ficaria errada.
+ Abaixo são mostradas a saída esperadas e a obtida:
+\layout Description
+
+Saída esperada:
+\layout Subparagraph
+
+1 'b' 4.6
+\layout Standard
+
+0 'a' 4.5
+\layout Description
+
+Saída obtida:
+\layout Subparagraph
+
+1 'b' 4.6
+\layout Standard
+
+1 'b' 4.6
+\layout Paragraph
+
+O que deve ficar claro para o leitor aqui é que cada vez que uma função
+ é chamada, novos endereços de memória tem de ser alocados.
+ Não é possível alocar esses endereços uma única vez no carregamento do
+ programa (hora em que executamos o programa).
+ Como isso é feito então?
+\layout Paragraph
+
+Quando o compilador transforma nosso código fonte (nosso texto) em linguagem
+ C em código de máquina, ele aloca um certo espaço de memória chamado PILHA
+ do programa.
+ O tamanho dessa pilha normalmente pode ser configurado dependendo do compilador
+ que se esteja utilizando.
+ Uma pilha é uma estrutura de dados simples semelhante a uma pilha de pratos,
+ você vai colocando um prato em cima do outro e o último prato que você
+ colocou é o primeiro que você vai tirar.
+\layout Paragraph
+
+Por esse motivo pilhas são também chamadas de LIFOs (Last In First Out).
+ O funcionamento das chamadas de função em um programa segue o mesmo esquema.
+ Quando chamamos uma função (por exemplo a foo) uma vez, colocamos os argumentos
+ dos dados na pilha de programa, sem apagar o outros dados já existentes
+ nas pilhas.
+ Pense como se tivessemos colocado um prato na mesa.
+ Quando chamamos outra função, colocamos outro prato em cima, ou seja, colocamos
+ os valores dos argumentos no topo da pilha.
+ Quando saímos da função, retiramos os dados do topo da pilha.
+ 
+\layout Standard
+
+Tente imaginar essa situação no caso do exemplo 4.
+ Na primeira chamada da função foo, os dados foram colocados no nível 0
+ da pilha (na mesa).
+ Quando a função foo foi chamada pela segunda vez, os dados foram colocados
+ no nível 1, alguns endereços de memória à frente (em cima do outro prato).
+ Quando saimos função foo chamada pela segunda vez, retiramos os argumentos
+ do nível 1 e os argumentos do nível 0 voltam a ser usados, dentro da primeira
+ chamada da função.
+ Quando saímos novamente da função foo, que tinha sido a primeira a ser
+ chamada, esvaziamos a pilha e voltamos para a função main.
+\layout Paragraph
+
+O importante a ser percebido pelo leitor é que em chamadas de funções, sempre
+ que uma função é chamada é alocada nova memória para seus argumentos.
+ No caso, é alocada na pilha do programa, mas é alocada.
+ Esse fato será de vital importância para a próxima seção.
+\layout Section
+
+Passagem por valor e por referência
+\layout Paragraph
+
+Na seção anterior vimos que quando argumentos são passados para uma função,
+ novas áreas de memória são alocadas para os mesmo.
+ A seguir, ilustraremos de uma forma um pouco mais prática esse processo
+ e veremos como, quando e porque usar ponteiros ao passarmos argumentos
+ para uma função.
+\layout Paragraph
+
+Para ilustrar melhor o processo, vamos mostrar um caso prático.
+ Vejamos o exemplo a seguir:
+\layout Description
+
+Exemplo 5:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+void soma_valor(int a, int b, int c) {
+\layout Standard
+
+c = a + b;
+\layout Standard
+
+}
+\layout Standard
+
+void soma_referencia(int a, int b, int *c) {
+\layout Standard
+
+*c = a + b;
+\layout Standard
+
+}
+\layout Standard
+
+int main() {
+\layout Standard
+
+int c=7;
+\layout Standard
+
+soma_valor(1,2,c);
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+soma_valor = %d 
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, c);
+\layout Standard
+
+soma_referencia(1,2,&c);
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+soma_referencia = %d 
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, c);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Você consegue adivinhar qual a saída desse programa? Observe as duas funções
+ soma_valor e soma_referencia.
+ O objetivo é somar a com b e colocar o resultado em c.
+ Vamos analisar primeiro como trabalha a função soma_valor.
+ Pelos motivos que discutimos na seção anterior, quando se chama uma função,
+ qualquer que seja, estamos alocando memória nova para seus argumentos.
+\layout Paragraph
+
+Dessa forma, quando declaramos int c na função main, o compilador escreveu
+ um código pedindo ao sistema operacional para reservar memória para um
+ inteiro.
+ Mas quando passamos esse inteiro para a função soma_valor, um novo inteiro
+ é alocado na pilha do programa (na verdade 3: a, b e c) e o valor do inteiro
+ c declarado na função mais é copiado para essa nova região na pilha.
+ Quando estamos referenciando o inteiro c na função soma_valor, não estamos
+ referenciando a mesma variável (a mesma região de memória) que alocamos
+ na função main, mas sim um outra variável (outra região de memória) alocada
+ na pilha quando a função é chamada.
+ 
+\layout Paragraph
+
+Preferimos chamar o inteiro declarado na função soma_valor de c e o inteiro
+ declarado na função main de c também, mas são variáveis diferentes, são
+ regiões diferentes alocadas na memória.
+ Dizemos, pelo jargão, que essas variáveis são variáveis locais.
+ O inteiro declarado dentro da função main é local dentro da função main
+ e os inteiros declarados como argumentos na função soma_valor também são
+ locais para a função soma_valor.
+\layout Paragraph
+
+Observe novamente o exemplo.
+ Note que a função soma_valor altera o inteiro (int c) da função soma_valor,
+ mas não altera o inteiro (int c) declarado na função main.
+ O primeiro printf, então, nos dá uma saída errada do programa.
+ 1 somado a dois resulta em 3, mas o primeiro printf imprime o número 7
+ (pois tinhamos inicializado c com 7 no início da função main).
+ Se tivessemos colocado um printf dentro da função soma_valor, contudo (experime
+nte fazer isso), o resultado seria 3.
+ 
+\layout Paragraph
+
+Deve estar bem claro para o leitor a essa altura que as variáveis locais
+ de uma função nada tem a ver com as variáveis locais de outra função.
+ Nós passamos argumentos como passado na função soma_valor quando não queremos
+ que a função altere o valor de nossas variáveis locais.
+ Esse modo de passar argumentos para uma função é chamado de passagem por
+ valor, pois passamos o valor do dado para a função.
+ Já na função soma_referencia, dizemos que o argumento é passado por referência,
+ pois estamos passando um endereço, um ponteiro para uma variável, uma referênci
+a para uma região de memória.
+\layout Paragraph
+
+O argumento c da função soma_referencia foi declarado como (int *).
+ (int *), como já vimos em seções anteriores, é um ponteiro para um inteiro,
+ isso é um endereço de memória onde está alocado um inteiro.
+ Quando passamos, no exemplo 5, os argumentos para a função soma_referencia,
+ perceba que não passamos o valor da variável c (c), mas sim o endereço
+ de c (&c).
+ Quando a função soma_referencia é chamada, são alocados dois inteiros na
+ pilha e um endereço.
+ Então, o valor 1 é copiado para o primeiro inteiro, o valor 2 é copiado
+ para o segundo inteiro e o endereço de c (c declarado na função main) é
+ copiado para o endereço alocado na pilha.
+ 
+\layout Paragraph
+
+Se a função soma_referencia alterasse o valor de sua variável local (seu
+ argumento) c, ela estaria alterando a cópia do endereço.
+ Contúdo, perceba que não alteramos c, mas sim *c, ou seja, o inteiro referencia
+do por c.
+ Alterar *c é alterar o conteúdo contido no endereço c da função soma_referencia
+, mas o conteudo contido no endereço c da função soma_referencia é o conteúdo
+ contido no endereço &c na função main, que é a variável c declarada na
+ função main.
+\layout Paragraph
+
+Para simplificar, vamos chamar a variável declara na função main de c_main
+ e a variável declarada na função soma_referencia de c_ref.
+ Quando chamamos a função soma_referencia, estamos passando &c_main (endereço
+ de c_main), ou seja, c_ref, a variável que foi alocada na pilha do programa
+ quando a função foi chamada, irá conter o endereço de c_main:
+\layout Subparagraph
+
+c_ref = &c_main;
+\layout Paragraph
+
+Quando alteramos, dentro da função, *c_ref, estamos alterando a variável
+ c_main, pois:
+\layout Subparagraph
+
+*cref = *(&c_main) = c_main;
+\layout Paragraph
+
+Logo, o segundo printf do exemplo imprime o resultado correto (3).
+ Sempre que você quiser criar uma função onde os argumentos passados para
+ ela devem ser alterados, declare esse argumento como um ponteiro e passe
+ o endereço de uma variável para uma função, ao invés de seu valor.
+ Um exemplo típico é a função scanf, tão conhecida por qualquer programador
+ c.
+ Considere o exemplo a seguir:
+\layout Description
+
+Exemplo 6:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int a;
+\layout Standard
+
+scanf(
+\begin_inset Quotes eld
+\end_inset 
+
+%d 
+\begin_inset Quotes eld
+\end_inset 
+
+, &a);
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+%d
+\begin_inset Quotes erd
+\end_inset 
+
+, a);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O programa não faz nada muito complicado, apenas recebe um número digitado
+ pelo usuário e o exibe novamente na tela.
+ Por que passamos o endereço de a (&a) na chamada da função scanf e passamos
+ apenas o valor de a (a) na chamada da função printf? Por que a função scanf
+ altera o valor de a.
+ Se passarmos a variável a para a função scanf, estaremos passando a por
+ valor e não será possível alterar seu valor.
+ Os programadores que criaram a função scanf, então, decidiram que a deveria
+ ser passado por referência, deveriamos passar um (int *) e não um (int).
+ Na função printf, como não precisamos alterar o valor de a dentro da função,
+ podemos passar por valor mesmo.
+\layout Subsection
+
+Exercícios
+\layout Itemize
+
+1.
+ Crie uma função divide, que recebe três argumentos, a, b e c.
+ Declare esses argumentos conforme achar necessário (int, int *, etc.), sendo
+ que a função deve retornar no terceiro argumento (c) o resultado da divisão
+ de a por b.
+\layout Subparagraph
+
+Resposta:
+\layout Standard
+
+void divide(int a, int b, int *c) {
+\layout Standard
+
+if (b==0) { //divisão por zero
+\layout Standard
+
+printf(stderr, 
+\begin_inset Quotes eld
+\end_inset 
+
+divisão por zero
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+);
+\layout Standard
+
+return;
+\layout Standard
+
+}
+\layout Standard
+
+*c=b/a;
+\layout Standard
+
+}
+\layout Section
+
+Ponteiros e vetores
+\layout Paragraph
+
+Já vimos como funcionam ponteiros e como usá-los na passagem de argumentos
+ para uma função, quando queremos que os dados sendo passados sejam alterados.
+ Agora vamos tentar entender a relação de ponteiros com vetores e matrizes
+ e também nos aprofundaremos um pouco no que são matrizes e vetores exatamente.
+\layout Paragraph
+
+Imaginemos que tenhamos declarado um vetor de short ints, como segue:
+\layout Subparagraph
+
+short int nome[100];
+\layout Paragraph
+
+O que o programa que o compilador escreveu faz no lugar dessa declaração?
+ O compilador nada mais faz senão escrever um código que pede para o sistema
+ operacional alocar memória para um endereço (um ponteiro) chamado nome
+ e então alocar mais 200 bytes (100 short ints) na memória e colocar o endereço
+ do primeiro desses 200 bytes em nome.
+ O mapa de memória a seguir ilustra melhor o processo (considerando que
+ um endereço ocupa 4 bytes de memória):
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="2" rows="2" columns="10">
+<features rotate="false" islongtable="false" endhead="0" endfirsthead="0" endfoot="0" endlastfoot="0">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="false" width="" special="">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="" special="">
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+endereço
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+0
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+1
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+2
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+3
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+4
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+5
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+...
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+202
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+203
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true" newpage="false">
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+conteudo
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome=4
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(nome)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(nome)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+(nome)
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome[0]
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome[0]
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome[...]
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="false" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome[99]
+\end_inset 
+</cell>
+<cell multicolumn="0" alignment="center" valignment="top" topline="true" bottomline="false" leftline="true" rightline="true" rotate="false" usebox="none" width="" special="">
+\begin_inset Text
+
+\layout Standard
+
+nome[99]
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Paragraph
+
+Ou seja, quando alocamos um vetor de 100 short ints, não estamos alocando
+ apenas 200 bytes, mas também um endereço para apontarmos para o primeiro
+ short int.
+ Pode parecer incrível numa primeira olhada, mas vetores e ponteiros são
+ praticamente a mesma coisa.
+ O que seria *(nome), então, de acordo com o mapa de memória acima? Seria
+ o conteúdo dos endereços 4 e 5, ou seja, nome [0].
+ Mas nome é o endereço do primeiro vetor, então nome = &(nome[0]).
+ 
+\layout Paragraph
+
+Agora vem uma nota importante.
+ nome vale quatro, quanto vale nome+1?? Se você respondeu 5, se enganou!
+ A resposta é 6.
+ Por que 6? Por que estamos somando um ponteiro para short int (short int
+ *), e um short int tem dois bytes.
+ Se nome fosse um ponteiro para um inteiro longo (long int *), nome+1 seria
+ 8, pois um long int tem 4 bytes! A aritmética entre ponteiros é importantíssima
+ em operações com vetores! Observe: nome +1 aponta para o segundo short
+ int do vetor, ou seja, nome+1=&(nome[1]).
+ Analogamente, podemos deduzir que *(nome+1)=nome[1].
+ Vamos generalizar isso.
+ Sendo i um inteiro válido, temos:
+\layout Subparagraph
+
+nome+i=&(nome[i])
+\layout Standard
+
+e
+\layout Standard
+
+*(nome+i)=nome[i]
+\layout Paragraph
+
+Isso é tudo o que você precisa saber para usar ponteiros com vetores.
+ Apenas para consolidar a informação, vamos a um exemplo:
+\layout Description
+
+Exemplo 7:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+void imprime_nome(char *nome) {
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+O nome é '%s'
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, nome);
+\layout Standard
+
+}
+\layout Standard
+
+int main() {
+\layout Standard
+
+char nome[50];
+\layout Standard
+
+scanf(
+\begin_inset Quotes eld
+\end_inset 
+
+%s
+\begin_inset Quotes erd
+\end_inset 
+
+, nome);
+\layout Standard
+
+imprime_nome(nome);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O exemplo é bem simples.
+ Apenas perceba que nome foi declarado como um vetor de bytes (char), mas
+ foi passado para duas funções que esperavam receber ponteiros.
+ A primeira, scanf, altera os bytes apontados por nome (ou seja, os bytes
+ do vetor).
+ A segunda apenas imprime o nome usando printf.
+\layout Section
+
+Ponteiros para void
+\layout Paragraph
+
+Até agora, sempre que declaramos ponteiros estavamos falando de ponteiros
+ para inteiros, para bytes, para números de ponto flutuante, etc.
+ Contudo, seria válida uma declaração de um ponteiro para void (vazio)?
+ Considere as duas declarações a seguir:
+\layout Subparagraph
+
+int *i;
+\layout Subparagraph
+
+void *v;
+\layout Paragraph
+
+Se declaramos i como ponteiro para i, sabemos que &i é o endereço do ponteiro,
+ i é um endereço e *i é um inteiro.
+ Mas se declaramos v como ponteiro para void, sabemos que &v é o endereço
+ do ponteiro v, v é um endereço, mas e *v? É o que? Um inteiro? Um char?
+ 
+\layout Paragraph
+
+Na verdade, se tentarmos des-referenciar um ponteiro para void (des-referenciar
+ é assumir o conteúdo da referência, se a referência é i, *i é a des-referência)
+, o compilador nos dará um erro.
+ Ponteiros do tipo (void *) são um tipo especial de ponteiros usados quando
+ queremos apontar para qualquer endereço.
+ Vejamos o seguinte exemplo:
+\layout Description
+
+Exemplo 8:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *a, c;
+\layout Standard
+
+char *b;
+\layout Standard
+
+a = &c;
+\layout Standard
+
+b = a;
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse programa gera um aviso (warning) quando tentamos compilá-lo, pois na
+ instrução b = a estamos copiando o valor de um tipo de dado (int *) para
+ outro (char *).
+ Embora ambos sejam endereços e um endereço possa ser perfeitamente copiado
+ para outro endereço, não importa o tipo, o compilador nos avisar quando
+ isso acontece, pois normalmente, se quisessemos copiar a para b teriamos
+ declarado ambos com o mesmo tipo de dado.
+\layout Paragraph
+
+Podemos dizer ao compilador, contudo, que estamos cientes de que estamos
+ copiando um tipo de dado para outro alterando a instrução com um cast:
+ b = (char *)a; Ou seja, estamos convertendo a para uma variável do tipo
+ ponteiro para char (char *) antes de copiarmos para b.
+ Essa é a forma que temos de dizer ao compilador que sabemos o que estamos
+ fazendo.
+\layout Paragraph
+
+Contudo, para algumas aplicações, queremos apenas um ponteiro, que ora pode
+ estar apontando para um char, ora para um int, etc.
+ Nesses casos, declaramos o ponteiro como um ponteiro para void (void *).
+ Vejamos mais um exemplo:
+\layout Description
+
+Exemplo 9:
+\layout Subparagraph
+
+#include <stdio.h> 
+\layout Standard
+
+int main () {
+\layout Standard
+
+void *v;
+\layout Standard
+
+int *i, c;
+\layout Standard
+
+c=5;
+\layout Standard
+
+i = &c;
+\layout Standard
+
+v = i;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+*v = %d *i=%d 
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *((int *)v), *c );
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse programa compila e roda normalmente.
+ Perceba que não precisamos fazer um cast para atribuir o valor do endereço
+ i para o endereço v (v=i), pois v foi declarado como void e pode apontar
+ para qualquer tipo de dado.
+ A declaração v = (void *) i; também seria válida.
+ Observe, porém, que na função printf não pudemos usar *v para referenciar
+ um inteiro, tivemos que converter v para um ponteiro para inteiro (int
+ *) antes de de desreferenciá-lo: *( (int *)v ).
+\layout Section
+
+Alocação dinâmica de memória
+\layout Paragraph
+
+Até agora,vimos que para usarmos variáveis (regiões de memória) em um programa,
+ precisamos declarar essas variáveis no código fonte e quando compilamos
+ o programa o compilador escreve instruções em código de máquina que pedem
+ ao sistema operacional que este aloque a memória que declaramos e devolva
+ o endereço dessa memória alocada para o nosso programa.
+ 
+\layout Paragraph
+
+Isso funciona muito bem, mas imagine o caso de um processador de textos,
+ por exemplo.
+ Imagine como seria se fossemos programar um processador de textos e tivessemos
+ que declarar o tamanho do texto que o usuário poderia digitar, quando estivesse
+mos fazendo nosso programa.
+ Isso seria horrível e totalmente limitado.
+ 
+\layout Paragraph
+
+Por esse motivo, algumas vezes nós não desejamos alocar a memória que utilizarem
+os no código fonte do programa.
+ Ao invés disso, nós apenas declaramos ponteiros para áreas de memória (ou
+ seja, alocamos apenas endereços quando o programa é carregado) e pedimos
+ para o sistema operacional alocar memória (que apontaremos com esses endereços)
+ conforme a necessidade.
+\layout Paragraph
+
+A memória que é alocada quando o programa é inicializado (as variáveis declarada
+s no programa) é chamada de memória alocada estaticamente, pois as regiões
+ de memória que são utilizadas pelas variáveis do programa são alocadas
+ quando o programa é carregado e desalocada quando o programa é finalizado.
+ Quando pedimos, no meio da execução do programa, para que o sistema operacional
+ aloque memória para nosso programa, estamos alocando memória dinamicamente.
+\layout Paragraph
+
+Veremos agora como é feito para que o nosso programa aloque memória no meio
+ de sua execução.
+ Isso pode ser feito em linguagem C através de uma função chamada malloc
+ (memory alloc).
+ Mas antes de falarmos sobre essa função, vejamos o exemplo a seguir.
+\layout Description
+
+Exemplo 10:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *i;
+\layout Standard
+
+*i=5;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *i);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse é, de longe, o erro mais comum que programadores C cometem ao aprender
+ a trabalhar com ponteiros.
+ O pior é que o programa compila e roda.
+ Na linha *i=5, atribuimos um valor para *i.
+ Mas no início do nosso programa, nós não declamos, em lugar algum, um inteiro.
+ Nós só declaramos um endereço, isso é, um ponteiro, mas esse endereço não
+ aponta para lugar nenhum ainda, não foi alocada memória para um inteiro,
+ para que pudessemos apontar para o mesmo.
+ Como i aponta para um endereço qualquer da memória (pois não o inicializamos
+ com valor algum), o nosso programa seria finalizado ao executarmos o mesmo
+ e receberiamos um erros de Segmentation Fault (Falta de segmentação) por
+ estamos tentando acessar um endereço de memória que não alocamos.
+\layout Paragraph
+
+Se quisermos colocar o valor 5 em um inteiro, precisamos alocá-lo primeiro.
+ O exemplo a seguir usa a função malloc para fazer isso.
+\layout Standard
+
+Exemplo 11:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+#include <stdlib.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *i;
+\layout Standard
+
+i = (int *) malloc(sizeof(int));
+\layout Standard
+
+*i=5;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *i);
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse programa não apenas declara um ponteiro para um inteiro.
+ Eis o protótipo da função malloc:
+\layout Subparagraph
+
+void *malloc(size_t size);
+\layout Paragraph
+
+size_t pode ser entendido como um inteiro.
+ Pense que está escrito int size (tamanho).
+ Quando a função malloc é chamada, é enviada uma chamada para o sistema
+ operacional (system call) pedindo para que size bytes de memória sejam
+ alocados e é devolvido um ponteiro para void (void *) referenciando o primeiro
+ bytes da região alocada.
+ No exemplo, usamos o operador sizeof() para alocarmos o tamanho em bytes
+ de um inteiro.
+ Como i foi declarado como (int *), usamos um cast para converter o ponteiro
+ para void retornado pela função malloc para um ponteiro para int.
+\layout Paragraph
+
+Existem algumas variantes da função malloc como a calloc, que preenche a
+ área de memória alocada com zeros, além de alocá-la.
+ A região de memória alocada pelo sistema operacional não é necessariamente
+ preenchida com zeros quando a alocamos, pois outro programa poderia estar
+ usando aquela memória antes de alocarmos.
+ Veja a documentação do seu compilador para conhecer outras variantes.
+\layout Paragraph
+
+Como último exemplo sobre o assunto, vamos mostrar um programa que alloca
+ não uma variável na memória, mas um vetor:
+\layout Subparagraph
+
+Exemplo 12:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+#include <stdlib.h>
+\layout Standard
+
+int main() {
+\layout Standard
+
+int *i, j;
+\layout Standard
+
+i = (int *) malloc(50 * sizeof(int));
+\layout Standard
+
+for (j=0; j<50; j++) {
+\layout Standard
+
+i[j]=j;
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+%d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, *(i+j));
+\layout Standard
+
+}
+\layout Standard
+
+return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+Esse programa aloca 50 * sizeof(int), ou seja, 50 inteiros.
+ A seguir, um loop for assinala um valor para cada inteiro do vetor e exibe
+ o valor na tela.
+ Perceba que a notação *(i+j) ou i[j] significam, na verdade, a mesma coisa.
+\layout Section
+
+Ponteiros que apontam para ponteiros
+\layout Paragraph
+
+Consideremos agora o caso de um ponteiro que aponta para outro.
+ Vejamos o seguinte exemplo:
+\layout Subparagraph
+
+#include <stdio.h> 
+\layout Standard
+
+#include <stdlib.h>
+\layout Standard
+
+int main() { 
+\layout Standard
+
+int **i; 
+\layout Standard
+
+i = (int **) malloc(sizeof(int *)); 
+\layout Standard
+
+*i = (int *) malloc(sizeof(int)); 
+\layout Standard
+
+**i=10; 
+\layout Standard
+
+printf("%d
+\backslash 
+n", **i); 
+\layout Standard
+
+return 0; 
+\layout Standard
+
+} 
+\layout Paragraph
+
+Esse exemplo é mesmo complicado.
+ Ao declararmos int **i, estamos declarando um ponteiro que aponta para
+ um ponteiro, ou seja:
+\layout Enumerate
+
+i é um endereço que aponta para a região de memória onde está *i
+\layout Enumerate
+
+*i é um endereço que aponta para a região de memória onde está **i
+\layout Enumerate
+
+**i é um inteiro.
+\layout Paragraph
+
+No primeiro malloc, alocamos memória para o endereço *i e fizemos o endereço
+ i apontar para esse endereço, ou seja, alocamos uma região de memória que
+ tem tamanho sizeof(int *).
+ No segundo, alocamos memória para esse inteiro (**i) e fizemos com que
+ o endereço *i apontasse para ele.
+ Na instrução seguinte, atribuimos um valor para esse inteiro e então usamos
+ printf para imprimí-lo.
+\layout Subsection
+
+Exercícios
+\layout Itemize
+
+1.
+ Faça um programa que aloque um vetor de ponteiros para char na memória
+ e, então, faça cada elemento do vetor apontar para um vetor de char.
+\layout Subparagraph
+
+Resposta:
+\layout Standard
+
+#include <stdio.h>
+\layout Standard
+
+#include <stdlib.h>
+\layout Standard
+
+int main() { 
+\layout Standard
+
+char **nomes; 
+\layout Standard
+
+int i; 
+\layout Standard
+
+//50 nomes, ou 50 vetores a alocar 
+\layout Standard
+
+nomes = (char **) malloc(50*sizeof(char *)); 
+\layout Standard
+
+for (i=0; i<50; i++) { 
+\layout Standard
+
+//Cada nome tem até 20 bytes 
+\layout Standard
+
+*(nomes+i) = (char *) malloc(20*sizeof(char)); 
+\layout Standard
+
+sprintf(nomes[i], "nome de número %d", i); 
+\layout Standard
+
+printf("nomes[%d]='%s'
+\backslash 
+n", i, nomes[i]); 
+\layout Standard
+
+} 
+\layout Standard
+
+return 0; 
+\layout Standard
+
+}
+\layout Section
+
+Ponteiros e estruturas
+\layout Paragraph
+
+Não há muito a se dizer sobre a utilização de ponteiros com structs.
+ Contudo, apenas para que o leitor já tenha visto uma vez essa utilização
+ de ponteiros, colocaremos um exemplo aqui.
+ A utilização de ponteiros com structs é especialmente importante quando
+ trabalhando com orientação a objetos em uma linguagem não orientada a objetos,
+ como C, mas isso está fora do escopo desse documento.
+\layout Description
+
+Exemplo 13:
+\layout Subparagraph
+
+#include <stdio.h>
+\layout Standard
+
+#include <stdlib.h>
+\layout Standard
+
+typedef struct _teste {
+\layout Standard
+
+short int a, b, c, d;
+\layout Standard
+
+} teste;
+\layout Standard
+
+void imprime_teste(teste *t) {
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+Os valores da estrutura encontrada no endereço %p são: %d, %d, %d e %d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\layout Standard
+
+t, t->a, t->b, t->c, t->d);
+\layout Standard
+
+}
+\layout Standard
+
+int main() {
+\layout Standard
+
+teste t1, *t2;
+\layout Standard
+
+t1.a=5; t1.b=6; t1.c=7; t1.d=8;
+\layout Standard
+
+t2 = (teste *) malloc(sizeof(teste));
+\layout Standard
+
+t2->a=4; t2->b=3; t2->c=2; t2->d=1;
+\layout Standard
+
+imprime_teste(&t1);
+\layout Standard
+
+imprime_teste(t2);
+\layout Standard
+
+}
+\layout Paragraph
+
+Nesse exemplo, foi declarada uma struct chamada _teste e foia tribuido (com
+ typedef) o nome teste como alias para (struct _teste).
+ A função imprime_teste apenas imprime os valores internos da estrutura
+ e o endereço de memória onde a estrutura está alocada.
+ A função main além de setar variáveis internas da estrutura e chamar a
+ função imprime_teste, usa a função malloc para alocar memória para uma
+ estrutura.
+\layout Paragraph
+
+A primeira coisa que se deve saber ao se usar uma struct é que os dados
+ declarados dentro da mesma são alocados na memória em sequência, ou seja,
+ se a estrutura é formada por 4 inteiros curtos (short ints), ter um ponteiro
+ para essa estrutura seria o mesmo que ter um vetor de 4 inteiros curtos.
+ Structs, contudo, custumam ser usadas quando se quer usar tipos diferentes
+ de dados (diferente do caso do vetor, onde só um tipo de dado é usado).
+ Esse fato permite que aloquemos memória para uma estrutura com a função
+ malloc.
+\layout Paragraph
+
+Outro detalhe muito importante é o modo como acessamos as variáveis internas
+ de uma struct.
+ Se declaramos uma variável do tipo teste chamada t1 (teste t1), podemos
+ acessar, como já é sabido, suas variáveis internas por:
+\layout Subparagraph
+
+t1.a, t1.b, t1.c e t1.d
+\layout Paragraph
+
+Mas e se tivermos declarado um ponteiro para teste chamado t2 (teste *t2),
+ como podemos acessar essas variáveis internas? Uma forma é:
+\layout Subparagraph
+
+(*t2).a, (*t2).b, (*t2).c e *(t2).d
+\layout Paragraph
+
+Contudo, essa forma é muito pouco utilizada, por ser trabalhosa de se escrever.
+ Podemos usar a notação a seguir para referenciar as variáveis internas
+ de t2:
+\layout Subparagraph
+
+t2->a é a mesma coisa que (*t2).a
+\layout Subparagraph
+
+t2->b é a mesma coisa que (*t2).b
+\layout Subparagraph
+
+t2->c é a mesma coisa que (*t2).c
+\layout Subparagraph
+
+t2->d é a mesma coisa que (*t2).d
+\layout Paragraph
+
+Essa foi a forma utilizada no programa de exemplo.
+\layout Subsection
+
+Exercícios
+\layout Itemize
+
+1.
+ Altere a função imprime_teste do programa de exemplo acima de modo que
+ ele use outra notação para referencias as variáveis internas da struct.
+\layout Subparagraph
+
+Resposta:
+\layout Standard
+
+void imprime_teste(teste *t) {
+\layout Standard
+
+printf(
+\begin_inset Quotes eld
+\end_inset 
+
+Os valores da estrutura encontrada no endereço %p são: %d, %d, %d e %d
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\layout Standard
+
+t, (*t).a, (*t).b, (*t).c, *(t).d);
+\layout Standard
+
+}
+\layout Bibliography
+\bibitem {key-1}
+
+
+\begin_inset LatexCommand \url[MPage - O portal brasileiro de desenvolvimento de jogos]{http://mlinuxer.cjb.net}
+
+\end_inset 
+
+
+\the_end

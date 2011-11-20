@@ -1,0 +1,2442 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass book
+\language brazil
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+
+\layout Title
+
+Desenvolvimento de jogos 
+\layout Author
+
+Marcelo Elias Del Valle (marceloelias@iname.com)
+\newline 
+Colaboradores: Mário Lacroix e Renato Soeiro
+\layout Date
+
+02/01/2002
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Part
+
+Módulo básico - C/SDL
+\layout Chapter
+
+Introdução
+\layout Paragraph
+
+Embora o mercado de trabalho na industria de entretenimento brasileira seja
+ enorme, desenvolvimento de jogos parece ser hoje, em 2002, uma área restrita
+ ao exterior.
+ Os poucos desenvolvedores brasileiros que se aventuram na área acabam,
+ por muitas vezes, se espelhando nos desenvolvedores de outros países, tanto
+ em tecnologia quanto em inspiração/enredo/história.
+\layout Paragraph
+
+O brasil não é forte em desenvolvimento de jogos, contúdo, não por falta
+ de talentos, muitos profissionais daqui são inclusive 
+\begin_inset Quotes eld
+\end_inset 
+
+exportados
+\begin_inset Quotes erd
+\end_inset 
+
+ - desejam muito desenvolver jogos e não encontram trabalho na área aqui
+ no Brasil, então procuram fora.
+\layout Paragraph
+
+A pergunta é: se temos mercado, talentos e muita capacidade, por que o número
+ de empresas de desenvolvimento de jogos no brasil é tão pequeno ainda?
+ Na opinião pessoal do autor desse texto, pelos seguintes motivos:
+\layout Enumerate
+
+Concorrência muito forte com empresas estrangeiras já consolidadas na área
+\layout Enumerate
+
+Falta de seriedade da grande maioria dos desenvolvedores brasileiros
+\layout Enumerate
+
+Sub-valorização da área
+\layout Paragraph
+
+Não é preciso ser gênio para enxergar o ítem 2.
+ Existem faculdades especializadas em cursos de desenvolvimento de jogos
+ nos EUA, Japão e Alemanha e a maioria das empresas nesses países vem desenvolve
+ndo esse tipo de tecnologia muito antes do computadores começar a popularizar
+ aqui no Brasil.
+\layout Paragraph
+
+O ítem 3 talvez seja o mais facilmente percebido no dia a dia.
+ Raras são as pessoas que conseguem encarar desenvolvimento de jogos como
+ trabalho.
+ A maioria encara, no máximo, como distração.
+ Isso faz com que a área não seja encarada com seriedade por muitos desenvolvedo
+res, que acabam dando baixa prioridade a isso (ítem 2) e faz também com
+ que muitos outros tipos de profissionais encarem isso como motivo de riso,
+ tornando comuns frases como: 
+\begin_inset Quotes eld
+\end_inset 
+
+Vocês deveriam estar desenvolvendo algo sério, que realmente tivesse utilidade
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Paragraph
+
+Desenvolvimento de jogos, contudo, deve ser encarada como uma área séria
+ tanto no tocante à pesquisa quanto à aplicação.
+ Em países de primeiro mundo, essa é uma das áreas que puxam vários e vários
+ ramos de pesquisa, pricipalmente aqueles relacionados com computação gráfica
+ e com a indústria bélica.
+\layout Paragraph
+
+Porém, o motivo maior que faz com que desenvolvimento de jogos seja uma
+ área de tão grande importância, principalmente no Brasil, é simples: é
+ um poderoso tipo de mídia, aliás, de multimídia.
+ Esse é o ponto mais importante a ser destacado aqui.
+ Existem no Brasil dois tipos de profissionais diretamente relacionados
+ com desenvolvimento de jogos: programadores e artistas.
+\layout Paragraph
+
+Esses dois, cada um do seu lado, costumam enxergar desenvolvimento de jogos
+ como sendo uma sub-área de artes ou de programação.
+ O fato é que desenvolvimento de jogos não pode ser encarado dessa maneira.
+ Desenvolvimento de jogos deve ser comparado com áreas como televisão, histórias
+ em quadrinhos, construção de websites e outros similares, não como um produto
+ desse tipo de mídia, pelo contrário, desenvolvimento de jogos é uma área
+ totalmente singular, mas assim como essas mídias, exerce forte influência
+ na cabeça das pessoas e muitas vezes abrange profissionais de várias áreas.
+\layout Paragraph
+
+Essa é, portanto, a primeira coisa a ser aprendida sobre o curso: esse não
+ é um curso de programação de jogos, nem de desenho ou modelagem ou recursos
+ computacionais, é um curso sobre desenvolvimento de jogos e tudo o que
+ essa expressão abrange, incluindo aí modelagem, responsabilidade, história,
+ metodologia de projeto, adequação à realidade brasileira, matemática, trabalho
+ em grupo e, claro, programação.
+\layout Section
+
+Audiência esperada
+\layout Paragraph
+
+Esse curso é dividido em vários módulos e cada módulo tem suas peculiaridades
+ com relação audiência esperada.
+ Esse primeiro módulo é mais voltado para programadores, embora também possa
+ ser lido por artistas mais voltados para a área de exatas.
+ 
+\layout Section
+
+Pré-requisitos
+\layout Paragraph
+
+Basicamente, é necessário saber programar em linguagem C.
+ Um bom conhecimento sobre ponteiros e sobre estruturas ajudaria bastante
+ no acompanhamento desse módulo.
+\layout Paragraph
+
+Antes de entrarmos na parte de programação, contúdo, definiremos vários
+ conceitos, úteis para profissionais de qualquer área (relacionada a desenvolvim
+ento de jogos), como metodologia de projetos e uma explicação sobre como
+ funcionam as cores e a parte gráfica de computadores e equipamentos similares.
+\layout Paragraph
+
+No tocante a harware e software, o leitor que quiser experimentar os exemplos
+ descritos nesse texto, o que é altamente recomendável, deverá possuir uma
+ máquina com espaço em disco o suficiente para instalar o ambiente cygwin
+ e SDL no caso do windows e gcc e SDL no caso de linux, sendo que uma máquina
+ com processamento maior ou igual a de um pentium 100 seria recomendável.
+\layout Paragraph
+
+Usuários de máquina Apple com MacOS X e usuários de BeOS também são capazes
+ de seguir o livro, mas deverão ter alguns compilador compatível com gcc
+ e SDL instalados em seu sistema.
+ Esse texto só descreve, porém, a instalação desses ambientes em linux e
+ windows.
+\layout Section
+
+Como funciona o curso?
+\layout Paragraph
+
+Esse curso é patrocinado pelo web portal MPage - O Portal Brasileiro de
+ Desenvolvimento de Jogos e é ministrado inteiramente via internet.
+ Isso não significa que é necessário estar conectado para fazer o curso,
+ mas significa que uma conexão à internet com suporte à www é necessário.
+\layout Paragraph
+
+O curso é composto de vários módulos, cada um com documentação relacionada,
+ a qual é disponibilizada para todos os usuários do portal.
+ Acesse o portal em 
+\begin_inset LatexCommand \htmlurl[http://mlinuxer.cjb.net]{http://mlinuxer.cjb.net}
+
+\end_inset 
+
+para tornar-se um usuário.
+\layout Paragraph
+
+O curso não provê apenas documentação, provê também de recursos como fórum,
+ mural de avisos e lista de discussão, utilizando os recursos do portal,
+ reuniões via bate-papo e exercícios.
+ No caso dos exercícios, o aluno matriculado acessa listas de exercícios
+ deixadas no portal, resolve as mesmas e envia por email para correção (uma
+ por vez, normalmente).
+ Essas listas são corrigidas e enviadas de volta para o aluno, de forma
+ que ele consiga ter ciência de como está indo no curso, consiga ter e sanar
+ dúvidas e aprender o máximo possível.
+\layout Paragraph
+
+Futuras versões desse curso, de forma mais interativa, usando recursos de
+ vídeo e áudio conferência, são desejadas e provavelmente serão implementadas
+ um dia, tão logo essas tecnologias popularizem o suficiente para ser viável
+ o seu uso.
+\layout Section
+
+Licença
+\layout Paragraph
+
+Toda a documentação desse curso é licenciada pela 
+\begin_inset LatexCommand \htmlurl[Licença Pública GNU]{http://www.gnu.org}
+
+\end_inset 
+
+.
+ Em termos gerais, isso significa que esse texto pode ser distribuido livremente
+, desde que bem preservados os direitos autorais tanto do autor original
+ quanto de autores de modificações.
+ Caso você pretenda distribuir esse documento, seria ótimo se fosse feita
+ uma notificação para o webmaster do portal.
+\layout Paragraph
+
+Por fim, essa documentação não pode ser vendida.
+ Nada impede, contúdo, que alguém ganhe dinheiro com produtos associados
+ a ela (por exemplo, distribuir essa documentação em CDROM e cobrar pela
+ mídia e pelo serviço de gravação).
+\layout Chapter
+
+Noções básicas
+\layout Paragraph
+
+Agora que já foi falado bastante sobre o curso, será abordado de forma inicial
+ o assunto do módulo propriamente dito.
+\layout Section
+
+Um pouco de história 
+\layout Paragraph
+
+Os jogos existem desde a pré-história.
+ É natural do ser-humano jogar, tanto é que jogar é divertido.
+ Jogar pode ser divertido por diversos motivos, talvez por treinar capacidades
+ no jogador sem que esse tenha de assumir responsabilidades (outra coisa
+ que existe desde a pré-história) ou ter de fazê-lo de forma entediante.
+\layout Paragraph
+
+Os jogos eletrônicos e de computador só surgiram na segunda metade do século
+ XX, quando os avanços tecnológicos permitiram seu surgimento.
+ Muitos ainda se lembram das antigas máquinas de fliperama, do famoso telejogo,
+ do atari e de todos os videogames similares que viram surgindo em sequência.
+\layout Paragraph
+
+Naquela época, por recursos de processamento e memória serem altamente escassos
+ e pelo fato de ser necessário um conhecimento técnico aprofundado para
+ desenvolver jogos para essas máquinas, desenvolvimento de jogos era uma
+ área quase totalmente restrita a engenheiros.
+ Isso continuou assim inclusive com o surgimento dos PCs (computadores pessoais)
+ da linha x86, que rodavam o sistema operacional DOS.
+ 
+\layout Paragraph
+
+Uma das partes mais difíceis de desenvolver jogos nessa época era saber
+ programar os chips no computador (mais epecificamente os chips de audio
+ e vídeo) de forma a produzir animações, gráficos e soms da forma mais rápida
+ e eficiente possível a partir de comandos do usuário em dispositivos de
+ entrada.
+ 
+\layout Paragraph
+
+Para isso, programadores da época usavam linguagem assembly, própria para
+ se usar quando um chip do computador manualmente, ao invés de pedir para
+ que o sistema operacional o faça (o que era bem mais lento).
+ Programadores usavam essa linguagem para programar os chips gráficos CGA,
+ VGA, SVGA, de audio como SoundBlaster e AdLib e outros comuns na época.
+ Era incrivelmente pequeno o número de placas e chips de som e vídeo que
+ existiam.
+\layout Paragraph
+
+Uma peculiaridade importante é que o sistema DOS sempre funcionou em mono
+ tarefa, ou seja, somente um programa é executado por vez.
+ Isso fazia com que a programação em linguagem assembly fosse extremamente
+ fácil, comparando ao que é hoje.
+ Com o surgimento do modo protegido de memória, do 386dx em diante, a programaçã
+o torna-se muito mais complicada.
+ Não seria viável hoje programar um jogo em linux ou windows usando linguagem
+ assembly.
+\layout Paragraph
+
+Além disso, vários outros avanços tecnológicos aconteceram, desde aumento
+ da quantidade de processamento e de memória dos PCs como um significativo
+ aumento no número de dispositivos de som, vídeo e multimídia existentes
+ hoje.
+ Placas aceleradoras 3D que algumas vezes são mais potentes que os próprios
+ PCs que as comportam tem se tornado cada vez mais populares.
+ 
+\layout Paragraph
+
+Por fim, os avanços foram tão grandes que permitiram que não apenas pessoas
+ com um grande conhecimento técnico sejam capazes de criar jogos, mesmo
+ um artista pode criar hoje, sozinho, jogos relativamente complicados.
+\layout Paragraph
+
+No panorâma atual vemos basicamente três frentes (grupos) de desenvolvimento
+ de jogos no Brasil hoje em dia.
+ Jogos multimídia feitos com ferramentas de criação prontas como Director,
+ Click&Play e MultimediaFusion, normalmente na forma de livro interativo,
+ jogos de pintar e infantis, todos esses se encaixam num primeiro grupo.
+ Outro grupo seriam jogos estáticos, ou seja, de cartas ou tabuleiro, sem
+ necessidade de performance alguma.
+\layout Paragraph
+
+O último grupo, que será o assunto mais tratado nesse texto, seriam jogos
+ orientados a performance, que além de requerem muito mais atenção do processado
+r normalmente tem uma lógica muito mais completa e específica.
+ Se encaixam nessa categoria, por exemplo, jogos de simulação, de estratégia
+ em tempo real, jogos de aventura em 3D, jogos de plataforma, etc.
+\layout Paragraph
+
+A tendência parece ser que cada vez mais esses grupos se dividam, sendo
+ que em qualquer um dos três seja inevitável o predomínio de jogos online,
+ que podem ser jogados via rede.
+\layout Paragraph
+
+Além disso, esse terceiro tipo de jogo não é mais programado hoje usando-se
+ linguagem assembly, certamente.
+ A variedade de peças de hardware (como placas multimídia) já é tão grande
+ que se torna necessário ao programador uma forma de criar um único programa
+ que rode com boa performance em qualquer máquina, qualquer que seja o hardware
+ que o usuário do jogo esteja utilizando.
+\layout Paragraph
+
+Com a aparente perda crescente de monopólio que a Microsoft, produtora do
+ windows, vem sofrendo, também é necessário que os jogos se tornem portáveis
+ entre sistemas operacionais, como linux, windows, MacOS X, BeOS, PlayStation,
+ etc.
+\layout Paragraph
+
+Conforme veremos em partes posteriores desse texto, o uso de linguagem C
+ com a biblioteca de programação SDL (Simple DirectMedia Layer) é a melhor
+ combinação atualmente para obtermos esse resultado.
+\layout Section
+
+Conceitos básicos sobre desenvolvimento de jogos
+\layout Paragraph
+
+Muitos desenvolvedores iniciantes, sobretudo programadores, pensam que criar
+ um jogo é simplesmente sentar em frente ao computador e começar a desenvolver.
+ Porém, essa parte, a de implementação, é normalmente cerca de 10% da criação
+ de um jogo real.
+ Isso vale para quase todo tipo de projeto.
+ Antes de chegar na parte de implementação, é necessário definir muito bem
+ como será o jogo a ser feito, analisar os problemas que surgem da definição,
+ projetar o jogo e finalmente implementá-lo.
+ 
+\layout Subsubsection
+
+Etapas na criação de um jogo
+\layout Paragraph
+
+É interessante que as etapas de criação de um jogo estejam formalmente definidas
+, mesmo que o desenvolvedor ou o time de desenvolvimento venham a quebrar
+ as regras provenientes dessa formalização.
+ 
+\layout Paragraph
+
+Essa etapas existem para que seja mais fácil a comparação entre projetos
+ distintos, para se ter uma idéia exata do que se está fazendo e, principalmente
+, para que desenvolvedores (não só programadores) possam conversar entre
+ si usando uma linguagem em comum.
+ 
+\layout Paragraph
+
+As etapas de criação de um jogo podem ser definidas como abaixo, não necessariam
+ente seguindo essa ordem:
+\layout Enumerate
+
+Definição do enredo e do tipo de jogo (funcionamento básico)
+\layout Enumerate
+
+Descrição formal do jogo, incluindo descrição detalhada do funcionamento
+ e da interface 
+\layout Enumerate
+
+Criação de recursos gráficos
+\layout Enumerate
+
+Criação de recursos sonoros
+\layout Enumerate
+
+Análise
+\layout Enumerate
+
+Projeto
+\layout Enumerate
+
+Implementação
+\layout Enumerate
+
+Depuração e testes
+\layout Paragraph
+
+Tenha em mente que essas etapas não necessariamente precisam estar presentes
+ no desenvolvimento de qualquer jogo, talvez não sejam necessárias para
+ implementar um jogo simples como tetris, mas é extremamente util ter essas
+ etapas em mente para se ter ciência do que está ou não sendo desenvolvido
+ na criação do jogo.
+\layout Paragraph
+
+A primeira etapa consciste em definir-se, superficialmente, como será o
+ jogo, ou seja, qual será a linha de raciocínio empregada na descrição formal.
+ Os peritos em metodologia de projeto custumam dizer que existe uma etapa
+ adicional antes dessa, chamada Brain Storm, ou chuva de idéias, que seria
+ um periodo de tempo, normalmente curto, quando os desenvolvedores anotam
+ todas as idéias tidas pelo grupo, sem desprezar nenhuma, mesmo aquelas
+ que parecem absurdas inicialmente.
+ Depois do Brain Storm vem a seleção da idéia que será levada em frente
+ e a primeira etapa da lista acima está completa.
+\layout Paragraph
+
+A segunda etapa consciste na descrição completa e detalhada de como será
+ o jogo em termos de funcionamento, interface e tudo o mais que for necessário
+ para que o jogo esteja completamente definido.
+ Pode-se incluir aqui uma definição do enredo, caso se trate de um jogo
+ no qual a história é um ponto relevante.
+\layout Paragraph
+
+As etapas 3 e 4 conscistem, obviamente, na criação dos recursos multimídia
+ que seram usados no jogo.
+ A etapa 5, de análise, normalmente é realizada por analistas ou programadores.
+ Enquanto a descrição formal do jogo (etapa 2) descreve o jogo do ponto
+ de vista do usuário, a análise é a etapa em que essa descrição é passada
+ para o ponto de vista do desenvolvedor, ou seja, é feita uma nova descrição
+ do jogo, mas dessa vez usando-se uma linguagem matemática mais formal,
+ que não deixe dúvidas com relação ao funcionamento do jogo.
+ É comum o uso de linguagens de alto nível como Fusion ou UML para fazer
+ essa descrição.
+ Essas linguagens normalmente podem também ser usadas na etapa seguinte,
+ de projeto.
+\layout Paragraph
+
+A etapa de projeto parte da análise para descrever detalhes de como o jogo
+ será implementado.
+ Detalhes como algorítmos a serem usados na lógica do jogo e como os dados
+ serão seram armazenados na memória são discutidos nessa etapa.
+ Uma vez que isso esteja bem definido, entramos na sétima etapa, de implementaçã
+o, que é quando o jogo realmente é programado e quando todas as partes são
+ reunidas.
+ Finalmente, os erros provenientes dessa etapa são encontrados e corrigidos
+ na etapa de depuração e testes.
+\layout Paragraph
+
+A primeira coisa que deve ficar clara é que, em alguns casos, cabe aos desenvolv
+edores definir que etapas viram antes ou depois, ou mesmo quais tarefas
+ viram em paralelo.
+ Conforme veremos mais adiante no curso, convém a utilização de fluxogramas
+ que essas definições sejam feitas formalmente e de cronogramas, para que
+ além de definir a ordem das tarefas também se tenha idéia de prazo.
+\layout Paragraph
+
+As duas primeiras etapas são as mais importantes, pois dá muito trabalho
+ para mudar algumas coisa definida nessas duas primeiras etapas quando o
+ desenvolvimento já se encontra em etapas posteriores.
+ Isso acontece porque uma etapa depende da outra, a análise será feita em
+ cima da descrição, o projeto em cima da análise e a implementação em cima
+ do projeto, mudar a descrição implica em mudar tudo isso.
+ 
+\layout Paragraph
+
+No caso de recursos gráficos e sonoros, imaginem como seria alto o custo
+ se 1000 imagens fossem desenvolvidas, junto com efeitos e trilha sonora
+ para um jogo de guerra entre dois planetas e, na etapa de projeto, a definição
+ fosse mudada para um jogo de guerra medieval.
+\layout Paragraph
+
+Normalmente, as etapas 3 e 4 podem ser feitas em paralelo com as etapas
+ 5, 6, 7 e 8, até porque normalmente envolvem tipos diferentes de profissionais.
+ As duas primeiras etapas sempre devem vir antes e devem ter o maior detalhament
+o possível, em qualquer caso.
+\layout Subsubsection
+
+Tipos de jogos 
+\layout Paragraph
+
+Um jogador atento de jogos eletrônicos deve notar, mesmo que não seja um
+ desenvolvedor, que os jogos costumam apresentar diversas semelhanças entre
+ si.
+ Essa semelhança não é coincidência.
+ O custo de desenvolvimento de um jogo é bastante alto.
+ Portanto, muitas empresas de desenvolvimento de jogos costumam investir
+ em máquinas de jogos (engines), ao invés de investir diretamente nos jogos
+ propriamente ditos.
+\layout Paragraph
+
+É fácil observar que há uma incrível semelhança entre jogos de tabuleiro
+ como damas ou xadrês, entre jogos de cartas, jogos 3D em primeira pessoa,
+ jogos de plataforma onde normalmente há um ou dois personagens que caminham
+ lateralmente em um cenário 2D apresentado em uma tela, jogos de estratégia
+ em tempo real, etc.
+\layout Paragraph
+
+Devido a essa grande semelhança, os jogos são normalmente diferenciados
+ pelo seu tipo.
+ O conhecimento sobre os tipos de jogos existentes, contudo, é mais uma
+ questão de mercado e de conhecimentos sobre atualidades que de conceitos.
+ O importante é ter em mente que os jogos normalmente tem semelhanças e
+ que, algumas vezes, o trabalho gasto em um jogo pode ser reaproveitado
+ em outro.
+\layout Paragraph
+
+Como exemplo, podemos citar um jogo de estratégia em tempo real 2D, onde
+ o usuário tem uma visão em uma perspectiva fixa do cenário, e um jogo de
+ estratégia em tempo real em 3D, com outra história, outros gráficos, etc.
+ Isso chega a ser obvio algumas vezes, mas é importante ser formalizado.
+\layout Subsubsection
+
+Profissionais que participam da criação de um jogo
+\layout Paragraph
+
+Em alguns jogos eletrônicos, sobretudo aqueles que faziam sucesso antigamente,
+ na época do seu surgimento, não precisam de muitos profissionais para serem
+ criados.
+ Atualmente existem até ferramentas de criação de jogos que, por serem tão
+ fáceis, chegar a se parecer com um jogo, embora cheias de limitações.
+\layout Paragraph
+
+Os jogos atuais, orientados a performance, contudo, não parecem seguir o
+ mesmo esquema.
+ Hoje jogos são encarados como um novo tipo de mídia, assim como a TV, revistas
+ em quadrinhos, web sites, etc.
+ Esses jogos normalmente costumam envolver profissionais de várias áreas
+ diferentes, incluindo aí programadores, analistas, profissionais da área
+ de propaganda, artistas gráficos como desenhistas e modeladores, músicos
+ e outros profissionais que exercem funções semelhantes, como arquitetos,
+ profissionais da área de filosofia, letras, história, ciências humanas
+ e geral, etc.
+\layout Paragraph
+
+Dois tipos de profissionais costumam estar presentes no desenvolvimento
+ de qualquer tipo de jogo, contudo, que são programadores e artistas gráficos.
+ É muito importante que esses os desenvolvedores de um jogo tenham uma boa
+ integração entre si, em especial esses dois.
+ Veremos nos capítulos seguintes detalhes sobre a integração no trabalho
+ de artistas gráficos e programadores e discussões sobre quais devem ser
+ as responsabilidades de cada um.
+\layout Paragraph
+
+Também deve ficar bem claro que programadores e outros profissionais da
+ área de exatas envolvidos devem ter a mente aberta o suficiente para se
+ envolver não só em questões técnicas, mas também em várias questões relativas
+ a outras áreas.
+\layout Subsubsection
+
+Formas de criar um jogo (linguagens de programação, ferramentas prontas)
+\layout Paragraph
+
+Muitas pessoas se iniciam no aprendizado de linguagens de programação por
+ um motivo bem definido: criar jogos.
+ De fato, quando falamos de desenvolvimento de jogos eletrônicos, mesmo
+ que não sejam jogos para computadores pessoais, normalmente estamos falando
+ de jogos que são programados em alguma linguagem ou que foram feitos em
+ um ferramenta programada em alguma linguagem.
+\layout Paragraph
+
+A surpresa para algumas dessas pessoas ocorrem quando descobrem que, mesmo
+ depois de terem aprendido a programar alguma linguagem ou até mesmo de
+ já terem um conhecimento razoável sobre programação, ainda não sabem ou
+ não tem idéia de como proceder para desenvolver jogos, principalmente se
+ estivermos falando de jogos orientados à performance.
+\layout Paragraph
+
+O que se deve ter em mente, portanto, quando se pensa nas formas de criar
+ jogos, é que o conhecimento mais necessário e importante não é uma linguagem
+ de programação em si ou o fato de saber como fazer isso ou aquilo, o importante
+ é o conceito.
+ Uma pessoa que aprende bem os conceitos por detrás da área de desenvolvimento
+ de jogos e os conceitos de computação em si (não só de programação, mas
+ sobre como o computador e outros dispositivos semelhantes funcionam por
+ dentro) será capaz de criar jogos com qualidade melhor e de forma otimizada
+ além de ser capaz de projetar os seus próprios jogos.
+\layout Paragraph
+
+Isso é o que parece, inclusive, fazer mais falta no mercado de desenvolvedores
+ de jogos atualmente.
+ Existem muito programadores competentes que são capazes de implementar
+ jogos projetados por outros, mas quais e quantos desses programadores são
+ capazes de projetar jogos eles mesmos ?
+\layout Paragraph
+
+São esses tipos de conceitos que veremos da próxima parte do curso em diante.
+ Em outras palavras, agora é que começaremos a dirigir nossa atenção para
+ o conhecimento mais técnico.
+ Por hora, é preciso saber algumas poucas coisas de como jogos podem ser
+ desenvolvidos.
+ Deve ficar bem claro que não necessariamente os jogos precisam ser desenvolvido
+s com essas ferramentas, maneiras alternativas podem ser usadas, mas o que
+ será mostrado são os tipos de ferramentas que de forma mais comum costumam
+ ser utilizadas.
+\layout Paragraph
+
+Na seção anterior, mencionamos tipos de jogos existentes.
+ Para alguns tipos de jogos de sucesso, como jogos de RPG, jogos em 3D,
+ em primeira pessoa, de corrida, etc., existem ferramentas prontas que permitem
+ que o usuário crie jogos mesmo sem ter muita noção de como isso está acontecend
+o internamente.
+ Exemplos de ferramentas desse tipo são o RPGMaker, Mugen, RPGMaker, Macromedia
+ Director, MultimediaFusion, Blender, DarkBasic, etc.
+ Procure por essas ferramentas em um site de busca ou no portal MPage para
+ maiores informações.
+\layout Paragraph
+
+Essas ferramentas normalmente fornecem um interface onde o usuário não precisa
+ se preocupar com programação para criar seus jogos.
+ Algumas delas, porém, como Blender e Director, permitem o uso de linguagens
+ de programação de alto nível para jogos um pouco mais complicados (blender
+ permite uso de python e Director o uso de uma linguagem própria, LINGO).
+ Deve-se destacar que nem sempre essas ferramentas são específicas para
+ jogos, Director costuma também ser usado para criação de apresentações
+ multimídia e blender para criação de imagens e animações 3D.
+\layout Paragraph
+
+Quando desenvolvendo jogos orientados a performance, o programador costuma
+ utilizar outras linguagens que permitem um acesso mais rápido aos recursos
+ do dispositivos sendo utilizados (como, no caso do computador, placa de
+ vídeo, som, memória) além de possibilitarem lógicas normalmente mais complicada
+s.
+\layout Paragraph
+
+O fato é que linguagens e ferramentas prontas normalmente impõe limites
+ com relação ao jogo a ser criado e também impõe restrições no quesito velocidad
+e.
+ Quando se deseja criar um jogo mais elaborado, orientado a performance,
+ qualidade e normalmente inovação, costuma-se utilizar liinguagens como
+ C, C++, Objective C, Pascal, etc.
+ Quando se deseja essa características mas há problemas com relação a escrever
+ muitos jogos, costuma-se utilizar bibliotecas de programação prontas nessas
+ linguagens (como crystal 3D, Clanlib, SDL, etc.).
+ Quando o importante é que o jogo seja feito no menor prazo possível e limitaçõe
+s não são um problema tão grande, então o uso de ferramentas prontas será
+ suficiente.
+\layout Chapter
+
+Noções sobre recursos gráficos 
+\layout Paragraph
+
+Agora que já tivemos uma introdução teórica não técnica sobre como jogos
+ são desenvolvidos, começaremos a pensar mais na parte técnica.
+ Nesse capítulo, serão ensinados os conceitos primordiais necessários para
+ utilização de gráficos em jogos.
+\layout Paragraph
+
+A primeira parte do capítulo tratará ainda de algumas informações não técnicas
+ como relação entre artistas gráficos e programadores quando desenvolvendo
+ um jogo.
+ A segunda parte já dará alguns conceitos sobre como funciona a parte gráfica
+ de um computador, que é muito similar a de outros dispositivos, e sobre
+ conceitos básicos como pixels, sprites, etc.
+\layout Paragraph
+
+No final do capítulo é proposto um exercício prático que é parte do projeto
+ final realizado ao longo do curso, que é a criação de um jogo orientado
+ a performance simples mas completo.
+ No exercício desse capítulo, será proposto que imagens sejam criadas no
+ Blender, programa 3D da NotANumber.
+ Para fazer o exercício desse capítulo, é assumido que o leitor já tenha
+ alguns conceitos básicos sobre utilização do blender.
+ Para obter esses conceitos, acesse o portal MPage, onde se encontram tutoriais
+ que ensinam a utilizar o básico sobre o blender.
+\layout Section
+
+Como gráficos podem ser usados em jogos
+\layout Paragraph
+
+Não é preciso explicar que gráficos podem ser utilizados em jogos, afinal,
+ a grande maioria dos jogos famosos existentes hoje se diferencia pelos
+ gráficos bem feitos.
+ Como utilizar esses gráficos e como criá-los é que é a questão a ser discutida
+ aqui.
+\layout Paragraph
+
+A primeira coisa a ser aprendida é como são guardados os gráficos na memória
+ do computador.
+ Quando fazemos um desenho em uma folha de papel, dizemos que esse desenho
+ está guardado no papel de forma analógica, pois chega a ser inviável tentarmos
+ olhar para um ponto no papel e dizer qual é a cor daquele único ponto.
+ Qual é o tamanho do ponto? Qual exatamente é aquela cor? Quando desenhamos
+ em um papel, tudo isso é muito impreciso.
+\layout Paragraph
+
+Quando falamos de gráficos digitais ou digitalizados, contudo, tudo isso
+ está muito bem definido.
+ Cada imagem no computador deve ser encarada como um conjunto de pontos,
+ dispostos em uma forma retângular (por exemplo o próprio monitor de vídeo),
+ onde cada ponto corresponde a uma cor bem definida.
+\layout Paragraph
+
+Como é isso? Imagine que sua placa de vídeo esteja configurada para uma
+ resolução de 800x600 pixels.
+ Isso significa que quando você olha para o monitor de vídeo você vê é como
+ um retângulo que exibe 800 pontos na largura por 600 na altura.
+ No total, estão sendo apresentados 800 vezes 600 = 480000 pontos.
+ 
+\layout Paragraph
+
+Cada ponto, por sua vez, é um número que corresponde a uma cor.
+ Além da resolução de pontos, verifique a configuração de sua placa de vídeo
+ e perceba que além da resolução de pontos, há uma resolução de cores.
+ A resolução de cores costuma ser referenciada como sendo de 8, 16, 24 ou
+ 32 bits.
+ O que significa isso?
+\layout Paragraph
+
+Como qualquer programador deve saber, sempre que armazenamos um número na
+ memória do conputador estamos usando uma quantidade de memória para armazenar
+ esse número.
+ Quando usamos um byte (8bits) de memória, podemos armazenar um número que
+ vai de 0 a 255.
+ Se quisermos armazenar um número mais alto, como 1000, temos de alocar
+ mais memória.
+ Com dois bytes (16bits) podemo armazenar dois números que vão de 0 a 255
+ ou podemos armazenar um número que vai de 0 à 65536 ou ainda três números
+ que vão de 0 a 32 e outro que vai de 0 a 1.
+ 
+\layout Paragraph
+
+A explicação para esse fato vem da matemática.
+ Cada bit pode assumir o valor 0 ou o valor 1.
+ Se temos 8 bits, temos 2 elevado a 8 = 256 combinações possíveis.
+\layout Paragraph
+
+Quando falamos então que a resolução de cores é de 8bits, dizemos que estamos
+ usando apenas um número que vai de 0 a 255 para armazenar essa cor.
+ Essa forma de armazenar as cores e de armazenar os gráficos na memória
+ terá fundamental importância quando fizermos programas em capítulos posteriores
+ que exibam gráficos no vídeo.
+\layout Paragraph
+
+Vamos pensar agora no seguinte: como cada número desses pode armazenar uma
+ cor? Qual a relação que existe entre uma cor e um número? Sabe-se da física
+ que qualquer cor que o olho humano consegue captar corresponde à uma parcela
+ de vermelho, outra de verde e outra de azul.
+ Toda cor que conseguimos enxergar pode ser formada apenas a partir dessas
+ três.
+\layout Paragraph
+
+Em inglês, vermelho é red, verde é green e azul é blue.
+ É por esse motivo que costumamos nos referênciar a cores que são descritas
+ por uma intencidade de vermelho, uma intencidade de verde e outra de azul
+ por CORES RGB (Red Green Blue).
+ Quando usamos um número para armazenar uma cor, portanto, devemos de alguma
+ forma guardar a informação sobre a intencidade de cada uma dessas 3 cores.
+ Veremos agora como isso é feito nos computadores em cada resolução de cores.
+ Tenha em mente que o importante é aprender os conceitos por enquanto, veremos
+ implementações em formas de programas com a libSDL depois.
+\layout Paragraph
+
+Uma nota importante deve ser feita: alguns dispositivos, principalmente
+ os antigos, usam resoluções menores que 8 bits para guardar a cor de um
+ ponto.
+ Essas resoluções já cairam em desuso e não serã tratadas aqui.
+\layout Subsection
+
+8 Bits - 256 cores - imagens baseadas em palette
+\layout Paragraph
+
+Usando 8 bits para armezenar a cor, quais seriam as formas possíveis de
+ armazenarmos cada intencidade? Poderiamos usar 2 bits (número de 0 até
+ 3) para cada cor (sobrariam 2), mas poderiamos representar pouquíssimas
+ cores com isso.
+ A idéia é que simultâneamente sejam exibidas 256 cores diferentes no vídeo,
+ mas cada uma dessas pode ser qualquer cor em termos de intencidade RGB.
+ Como é feito então?
+\layout Paragraph
+
+É usada uma palette de cores, que armazena as cores RGB para cada cor das
+ 256 possíveis.
+ Referenciamos então cada uma dessas 256 cores por um índice (que vai de
+ 0 até 255), sendo que esse índice pode ser representado por um byte.
+ Para cada índice, porém, são usados três bytes, um para guardar o vermelho,
+ outro para o verde e outro para o azul.
+ É novamente usado um número de 0 a 255 para armazenar a informação sobre
+ a intencidade de cada uma dessas 3 cores.
+\layout Paragraph
+
+Quando o computador opera no modo de 8 bits, portanto, o programa que acessa
+ o gráfico deverá informar ao chip de vídeo uma localização na memória onde
+ se encontra essa palette.
+ Além disso, toda imagem que estiver armazenada na memória convencional
+ ou na memória de vídeo deverá representar cada ponto por um byte, que contém
+ um número de 8 bits que corresponde a um índice nessa palette.
+ 
+\layout Subsection
+
+16 bits - 65.536 cores
+\layout Paragraph
+
+Quando usamos 16 bits de cor, não há necessidade de palette.
+ Usamos normalmente apenas os 15 primeiros bits e guardamos a intencidade
+ de cada cor RGB de 5 em 5 bits.
+ Como 2 elevado a 5 é 32, então usamos um número de 0 até 31 para armazenarmos
+ a intencidade de cada cor.
+ Perceba que embora possamos mostrar simultâneamente mais que 256 cores
+ ao mesmo tempo na imagem, há uma quantidade menor de cores disponíveis.
+\layout Subsection
+
+24 bits - 16.777.216 cores
+\layout Paragraph
+
+Quando usamos 24 bits para cada cor, temos 3 bytes, um para cada intensidade
+ de vermelho, verde e azul.
+ A utilização desse mode fica bastante simples, pois na hora de programar
+ podemos usar três variáveis do tipo char (em C) e atribuir a elas um valor
+ de 0 a 255, simplesmente.
+\layout Subsection
+
+32 bits - 16.777.216 cores + transparência
+\layout Paragraph
+
+Quando o formato de 32 bits é utilizado, as intensidades das cores RGB são
+ guardadas nos primeiro 24 bits, como na resolução de 24 bits.
+ Os últimos 8 bits guardam informação sobre a transparência da cor.
+ Usar imagens que suportam transparência normalmente é um pouco mais lento
+ mas poupa muito trabalho de implementação, além de ser uma ferramenta extremame
+nte poderosa.
+\layout Paragraph
+
+Esses último 8 bits, que correspondem a um número de 0 a 255, costumam ser
+ chamados de canal Alpha da cor.
+ Sempre que ouvir essa expressão, lembre-se que estão falando sobre a transparên
+cia.
+\layout Paragraph
+
+Finalizando essa seção, deve ser dito que dado o formato como essas imagens
+ são armazenadas, podemos utilizá-las de várias formas em jogos.
+ Existem jogos em 3D e jogos em 2D.
+ Em jogos 3D, costuma-se utilizar imagens na forma de texturas, representando
+ pele, grama, rostos, etc.
+ Em jogos 2D, as imagens são copiadas para a tela (que na verdade também
+ é uma imagem de um dos tipos acima) uma em cima da outra, e o resultado
+ final é o que vemos em vários jogos.
+ Tudo isso ficará bem mais claro no decorrer do curso.
+\layout Section
+
+Como criar gráficos a serem utilizados em jogos (que ferramentas usar) 
+\layout Paragraph
+
+São inúmeras as ferramentas que podem ser utilizadas para criarmos imagens,
+ muitas com licenças comerciais, outras grátis, uma para um sistema, outras
+ para outro, mas os conceitos aprendidos em uma normalmente não são perdidos
+ quando passamos a usar outra.
+ Além de ferramentas para a criação de imagens, também existem ferramentas
+ para tratamento de imagens.
+ Algumas mais conhecidas serão citadas no decorrer do texto.
+\layout Paragraph
+
+A primeira ferramenta que é recomendada para acompanhar esse curso é o Blender.
+ Veja o portal da MPage para obter informações sobre como utilizar esse
+ programa, pois o conhecimento sobre como usar uma ferramenta assim é muito
+ útil para quem quer desenvolver jogos.
+ Para muitos exercícios no livro talvez sejam necessárias imagens criadas
+ com o blender.
+\layout Paragraph
+
+Como usar cada uma das ferramentas é assunto para vários livros e não será
+ discutido com detalhes aqui.
+ Mas é extremamente recomendado que o leitor conheça as seguintes ferramentas:
+\layout Enumerate
+
+
+\begin_inset LatexCommand \htmlurl[Image Magick]{http://imagemagick.sf.net}
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset LatexCommand \htmlurl[GIMP - GNU Image Manipulation Program]{http://www.gimp.org}
+
+\end_inset 
+
+
+\layout Paragraph
+
+São ferramentas muito uteis no tratamento e manipulação de imagens.
+ Image Magick é um conjunto de aplicativos para manipulação de imagens e
+ conversão de formatos de arquivo.
+ GIMP é o programa da GNU para tratamento de imagens e aplicação de efeitos.
+ Em seu website há bastante documentação disponível.
+\layout Section
+
+Trabalho entre artistas gráficos e programadores
+\layout Paragraph
+
+Os dois tipos de profissionais mais necessários no desenvolvimento de um
+ jogo talvez sejam artistas e programadores.
+ Uma boa integração entre ambos os profissionais é essencial para que o
+ desenvolvimento seja bem sucedido.
+ Veremos quais são as responsabilidades básicas de cada um nesse desenvolvimento
+ e discutiremos um pouco sobre a semelhança entre jogos e outros tipos de
+ mídia onde artistas estão mais presentes que programadores.
+\layout Subsection
+
+Quais são as responsabilidades dos artistas
+\layout Paragraph
+
+Artistas gráficos são normalmente responsáveis pela criação das imagens
+ a serem utilizadas no jogo.
+ As imagens podem ser desenhadas a mão e digitalizadas por meio de um scanner,
+ equipamento próprio para a função, ou modeladas em 3D usando-se ferramentas
+ como blender, 3D Studio, Maya, K3D, etc.
+ Em raros casos, são usados programas vetoriais (como sketch, KIllustrator
+ e Corel Draw) ou de desenho 2D (PaintBrush, xpaint, kpaint) para criar
+ as imagens.
+\layout Paragraph
+
+Uma vez criadas as imagens, costuma-se usar programas de tratamento de imagens
+ como GIMP, Photoshop ou mesmo ImageMagick para que as imagens sejam tratadas
+ ou efeitos sejam aplicados.
+ Artistas gráficos normalmente são também responsáveis por isso.
+\layout Paragraph
+
+Finalmente, artistas gráficos são responsáveis por criar os arquivos contendo
+ as imagens e animações necessárias, no formato correto e na resolução correta
+ a ser lida pelo jogo.
+ Outros tipos de artistas responsáveis por efeitos sonoros, música, interface,
+ etc normalmente seguem responsabilidades muito semelhantes.
+\layout Subsection
+
+Quais são as responsabilidades dos programadores
+\layout Paragraph
+
+Programadores são responsáveis pela etapa de implementação do jogo.
+ Com relação aos artistas os programadores devem definir exatamente quais
+ serão os formatos gráficos (no caso de artistas gráficos, claro) a serem
+ utilizados no jogo, quantas e quais imagens serão necessárias e como essas
+ imagens devem ser fornecidas aos programadores.
+ 
+\layout Paragraph
+
+É importante que programadores estejam sempre em contato com artistas e
+ responsáveis pela parte de enredo do jogo de forma a estarem sempre cientes
+ de qual infra-estrutura é necessária e de que modo pode-se prover maior
+ liberdade para quem decide como será o jogo.
+ O programador faz o papel da infra-estrutura, artistas cuidam da beleza
+ e os responsáveis pelo enredo e por como será o jogo cuidam do conteúdo.
+ Um bom diálogo entre todos os tipos de profissionais ajuda a deixar claro
+ para o grupo qual será o jogo feito, como será esse jogo e como poderia
+ ser tal jogo.
+\layout Subsection
+
+A semelhança entre criação de jogos e outros tipos de mídia
+\layout Paragraph
+
+De fato, jogos hoje tem uma participação massiva no estilo de vida das pessoas.
+ Quando falamos de mídia, devemos ter ciência de que estamos falando de
+ algo que tornou o mundo naquilo que conhecemos hoje.
+ Cada vez mais fica claro para o ser humano que o mundo é enorme no quesito
+ informação, mas cada vez mais está dificil para as pessoas saber como encontrar
+ a informação que interessa.
+ 
+\layout Paragraph
+
+Jogos, assim como quadrinhos, cinema ou mesmo novelas e seriados não costumam
+ conter somente uma história, mas também muita informação.
+ O que o autor desse texto espera que fique claro para quem está lendo é
+ que desenvolver jogos não é só técnica, é também uma responsabilidade muito
+ grande.
+ Se um dia você, o leitor, desenvolver um jogo onde indiretamente é passada
+ a informação de que a coisa mais importante do mundo é lutar contra alienígenas
+, pode parecer incrível mas possivelmente grupos anti-alienígenas surgiram
+ no mundo se seu jogo fizer sucesso.
+ 
+\layout Paragraph
+
+Você, o desenvolvedor, é quem decide como será o jogo.
+ Você acata parte da responsabilidade das consequências que seu jogo trouxer,
+ caso venha a trazer alguma.
+\layout Section
+
+Noções sobre formatos gráficos 
+\layout Paragraph
+
+JPEG, TGA, BMP, PCX, GIF, PNG, DXF, 3DS, BLEND, TIF, XPM, são apenas algumas
+ das várias extenxões de arquivos gráficos.
+ Cada extenxão corresponde a um formato no qual as imagens (conjuntos de
+ pontos onde cada ponto corresponde a uma cor) são salvas.
+ Para cada formato, pode-se ainda ter variações no que diz a resolução de
+ pontos, de cores, qualidade da imagem, transparência, etc.
+\layout Paragraph
+
+É interessante para o desenvolvedor ter conhecimento sobre os formatos de
+ arquivos gráficos mais comuns, para que possa ter parâmetros na hora de
+ decidir qual formato usar.
+ Segue explicação de alguns conceitos importantes sobre formatos e uma descrição
+ sucinta de alguns tipos de arquivos.
+\layout Subsection
+
+Conceitos importantes
+\layout Itemize
+
+Transparência absoluta e canais ALPHA
+\layout Paragraph
+
+Formatos gráficos que suportam transparência podem suportar transparência
+ absoluta ou canal ALPHA.
+ Quando o canal ALPHA é suportado, normalmente o gráfico é mais demoradamente
+ exibido, mas o formato descreve (conforme já dito acima) uma porcentagem
+ de transparência para cada pixel (ponto gráfico) da imagem.
+ Quando é suportada transparência absoluta, alguns pixels são marcados como
+ transparentes ou não, sem nível de transparência.
+ Essa forma de obter transparência nas imagens costuma ser bem mais rápida
+ na hora de exibir a imagem, principalmente se for utilizado RLE.
+\layout Itemize
+
+RLE - Run-Length Encoding
+\layout Paragraph
+
+RLE é uma forma utilizada por vários formatos gráficos para diminuir o tamanho
+ ocupado pela imagem na memória.
+ Conciste basicamente em gravar os dados na memória de forma que fique escrito
+ algo como 
+\begin_inset Quotes eld
+\end_inset 
+
+28 pixels pretos a partir da posição P
+\begin_inset Quotes erd
+\end_inset 
+
+ ao invés de escrever 28 vezes a cor preta.
+\layout Itemize
+
+Gráficos vetoriais
+\layout Paragraph
+
+Gráficos vetoriais não são como os gráficos que estudamos até agora, chamados
+ de pixmaps, que são conjunto de pontos onde cada ponto corresponde a uma
+ cor.
+ Quando uma imagem é salvada em formato vetorial estamos dizendo que se
+ uma circunferência é desenhada na imagem, não há a informação de quais
+ pixels estão na cor da circunferência e quais não estão, a informação guardada
+ é do tipo 
+\begin_inset Quotes eld
+\end_inset 
+
+existe uma circunferência de cor C na posição P da imagem com raio R
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Esse é apenas um exemplo ilustrativo para mostrar a diferença entre os
+ dois tipos de formatos.
+\layout Subsection
+
+Tipos comuns de arquivo
+\layout Itemize
+
+JPEG, JPG
+\layout Paragraph
+
+Formato de arquivo altamente utilizado na internet.
+ A grande vantagem desse tipo de arquivo é seu tamanho, normalmente muito
+ pequeno, mesmo para imagens de grandes resoluções.
+ Esse formato também permite que uma imagem seja salva com perda de informações
+ (perda de qualidade) para que seu tamanho fique menor.
+ É possível salvar imagens em várias resoluções de cores, mas não suporta
+ transparência.
+ Demorado para carregar do disco.
+\layout Itemize
+
+TGA - TARGA
+\layout Paragraph
+
+Suporta várias resoluções de cores e transparência (ALPHA somente), além
+ de ter uma compactação razoável.
+ Também é um pouco demorado para carregar do disco.
+\layout Itemize
+
+ICO - Windows Icon
+\layout Paragraph
+
+Ícones do windows, resolução de pontos e cores altamente limitada mas pequeno
+ e leve.
+ Suporta transparência absoluta.
+\layout Itemize
+
+BMP - Windows Bitmap
+\layout Paragraph
+
+Formato gráfico padrão do windows.
+ Sem qualquer compactação ou suporte para transparência, mas com suporte
+ para várias resoluções de cores, (8, 16 ou 24).
+ Os arquivos costumam ficar muito grandes nesse formato.
+ BMP bem do nome bitmap ou mapa de bits, tem esse nome por motivos históricos,
+ pois quando só existiam imagens preto e branco era usado um único bit para
+ cada cor.
+\layout Itemize
+
+XPM - X PixMap
+\layout Paragraph
+
+Formato gráfico padrão do X Window System, sistema gráfico comum em *nix,
+ incluindo linux.
+ Mesmas características do BMP, mas suporta transparência absoluta.
+ XPM vem do nome X PIXMAP, que significaria 
+\begin_inset Quotes eld
+\end_inset 
+
+Mapa de Pixels do X
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Itemize
+
+GIF - Formato gráfico da Compuserve
+\layout Paragraph
+
+Suporta somente imagens com resolução de cor de 8bits, baseadas em palette.
+ Também suporta transparência absoluta.
+ Esse formato é ainda muito usado na internet, mas pelo fato da Compuserve,
+ criadora do algorítmo, ter começado a tentar cobrar pelos direitos de uso
+ desse formato após o formato estar absolutamente popularizado na rede,
+ muitos começaram a trocá-lo pelo formato .PNG.
+\layout Itemize
+
+PNG - Resposta para o GIF
+\layout Paragraph
+
+Sucessor do GIF, livre de cobranças relacionadas a sua utilização.
+ Suporta tudo o que o GIF suporta e, de quebra, imagens com resolução maior
+ que 8 bits e canais ALPHA ao invés de transparência absoluta.
+\layout Itemize
+
+PCX - ZSoft PC Painbrush Format
+\layout Paragraph
+
+Formato antigamente usado em jogos desenvolvidos para DOS.
+ Esse formato foi criado pela ZSoft para seu produto PC PaintBrush.
+ A utilização mais comum era com resoluções de 8 bits, mas existem versões
+ do formato que suprtam mais cores.
+ A única vantagem desse formato hoje é o fato de ser bem conhecido e fácil
+ de se implementar sem uso de bibliotecas gráficas.
+ Para algo mais profissional, não costuma mais ser usado.
+\layout Itemize
+
+DXF - Formato para troca de dados
+\layout Paragraph
+
+Formato usado para guardar gráficos vetoriais 2D e 3D.
+ Programas do tipo CAD ou de modelamento costumam suportar esse formato.
+\layout Itemize
+
+BLEND - Formato Blender 
+\layout Paragraph
+
+Formato de arquivo do programa Blender.
+ Guarda várias informações dentro dele, não apenas uma imagem.
+ Normalmente são guardados também modelos 3D, animações e, por vezes, até
+ programas em linguagem python.
+\layout Section
+
+Sprites, o que são?
+\layout Paragraph
+
+Sprites existem desde o início do desenvolvimento dos jogos eletrônicos.
+ Quando criamos um jogos, existem determinadas entidades, representadas
+ no video por imagens, que são controladas pelo jogador ou por uma lógica
+ programada no computador.
+ Essas entidades normalmente correspondem aos personagens presentes nos
+ jogos e são chamadas de sprites.
+ Grosso modo, toda entidade visual que obedece a uma lógica qualquer é chamada
+ sprite.
+ Esse talvez não tenha sido o sentido original da palavra, mas parece ser
+ o mais adequado hoje em dia.
+ Essa notação é mais comum em jogos 2D, embora também seja usada em jogos
+ 3D.
+\layout Paragraph
+
+As características de um sprite são simples de serem observadas, basta imaginarm
+os os jogos tradicionais.
+ Quase sempre existem personagens nesses jogos, sendo que esses personagens
+ tem ações que podem ser tomadas (no caso de um humano poderia ser andar
+ para um lado, andar para outro, pular, etc) e cada ação é uma animação
+ composta por várias imagens e algumas vezes som.
+\layout Paragraph
+
+Por hora, é o que é necessário dizer sobre sprites, apenas para que o leitor
+ não se perca com terminologia.
+ Adiante, no curso, veremos exemplos práticos do uso de sprites, inclusive
+ no projeto desse módulo, o jogo1.
+\layout Section
+
+Descrição para o jogo do projeto desse módulo - jogo 1
+\layout Paragraph
+
+Segue abaixo a descrição formal (primeira etapa do desenvolvimento) do jogo
+ projeto a ser desenvolvido durante o curso.
+ É interessante prestar atenção nos detalhes para ir se acostumando.
+ Todo desenvolvedor com um mínimo de profissionalismo faz uma descrição
+ do tipo antes de qualquer outra coisa.
+\layout Itemize
+
+Nome do jogo: Blocos
+\layout Itemize
+
+Resolução do jogo: 640 x 480 x 32bits(ALPHA)
+\layout Paragraph
+
+Note que o jogo poderá rodar em qualquer resolução na máquina da pessoa,
+ inclusive 8bits, mas internamente no programa usaremos 32bits.
+\layout Subsection
+
+Descrição da interface e dos níveis: 
+\layout Paragraph
+
+Ao iniciar o jogo, o usuário vê um menu com as seguintes opções: 
+\layout Enumerate
+
+Escolher nível 
+\layout Enumerate
+
+Sair
+\layout Paragraph
+
+Escolhendo a opção 1, ele vê um menu de todos os níveis disponíveis.
+ Seleciona um com o teclado e tecla ENTER para começar a jogar aquele nível.
+ Acabando o nível ele volta para o menu.
+\layout Paragraph
+
+Cada nível corresponde a uma tela da resolução indicada acima dividida em
+ quadrados de 20x20 pixels, ou seja, uma tela de 32x24 quadrados.
+ A tela é dividida como demonstrado na FIGURA1.
+ Na figura, as partes em vermelho e em azul servem para exibir número de
+ vidas, pontos e outras coisas do gênero.
+ A parte rosa é reservada e a parte verde é a parte onde ficam os blocos
+ a serem acertados.
+ O bloco preto é o sprite controlado pelo jogador.
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset Figure size 595 446
+file ../../blocos/doc/figura1.eps
+subcaption Figura 1
+width 3 100
+flags 15
+
+\end_inset 
+
+
+\layout Paragraph
+
+A parte verde é a parte que muda de nível para nível.
+ Essa parte é composta por 14x16 retângulos de 40x20 pixels, que correspondem
+ aos blocos.
+ As partes vermelha e rosa tem 24 quadrados de altura e 2 de largura.
+ A parte azul tem 32 de largura e 2 de altura.
+ O bloco preto tem tamanho inicial de 40x20, mas pode ter seu tamanho alterado
+ no decorrer do jogo.
+\layout Subsection
+
+Funcionamento do jogo
+\layout Paragraph
+
+O jogo começa com um nível carregado e com o bloco preto com a coordenada
+ x no centro da tela.
+ Uma bola fica em cima do bloco do jogador até que o jogador pressione a
+ tecla de espaço.
+ Uma vez pressionada, a bola é lançada para cima.
+ Cada vez que a bola colide, seu movimento é alterado, de forma a parecer
+ que um choque perfeitamente elástico ocorreu.
+\layout Paragraph
+
+Cada vez que a bola colide em um bloco, o bloco sofre uma reação, que varia
+ de acordo com o tipo de bloco e com o tipo de bola atual.
+ As reações são descritas a seguir.
+ O objetivo do jogador é quebrar todos os blocos que podem ser quebrados
+ sem que a bola caia para baixo da linha tracejada.
+ Para não deixar a bola cair, o jogador deve movimentar o bloco para os
+ lados de forma que esse colida com a bola.
+\layout Paragraph
+
+Quando um bloco quebra, por vezes deixa cair um bônus, representado por
+ um retângulo de 40x20 pixels.
+ Caso o jogador consiga fazer seu sprite colidir com o bônus, o bônus é
+ acionado.
+ Os tipos de bônus são descritos a seguir.
+\layout Subsection
+
+Tipos de blocos
+\layout Itemize
+
+0 - Bloco padrão, quando a colisão acontece ele é destruido.
+ 
+\layout Itemize
+
+1 - Quando a colisão acontece, se transforma no bloco 0.
+ 
+\layout Itemize
+
+2 - quando a colisão acontece, se transforma no bloco 1.
+ 
+\layout Itemize
+
+3 - Bloco indestrutível, não quebra nunca
+\layout Subsection
+
+Tipos de bola: 
+\layout Itemize
+
+0 - Tipo padrão, muda seu movimento quando colide com os blocos.
+ 
+\layout Itemize
+
+1 - Indestrutível, quebra qualquer bloco destrutível mas não muda seu movimento
+ ao colidir.
+\layout Subsection
+
+Tipos de bônus:
+\layout Itemize
+
+0 - Faz o usuário ganhar uma vida
+\layout Itemize
+
+1 - Muda tipo de bola para 0
+\layout Itemize
+
+2 - Muda tipo de bola para 1
+\layout Itemize
+
+3 - Adiciona uma nova bola ao jogo, ou seja, o jogador passa a ter uma bola
+ a mais para quebrar os blocos.
+ 
+\layout Itemize
+
+4 - Altera o tamanho do sprite do jogador para 60x20 caso seja diferente,
+ ou para 40x20 caso já tenha esse tamanho.
+ 
+\layout Itemize
+
+5 - Altera o tamanho do sprite do jogador para 30x20 caso seja diferente,
+ ou para 40x20 caso já tenha esse tamanho.
+ 
+\layout Itemize
+
+6 - Adiciona barreira no chão ou retira a mesma, caso já exista.
+ Não deixa a bola passar do chão, ou seja, o usuário não tem como perder
+ enquanto o bônus está ativo.
+\layout Subsection
+
+Colisões e velocidades: 
+\layout Paragraph
+
+Cada bola tem uma velocidade em pixels para a coordenada X e Y.
+ Essa velocidade vai de -MAX_VEL_X até MAX_VEL_X para x e -MAX_VEL_Y até
+ MAX_VEL_Y para y.
+ Sempre que ocorre uma colisão e o movimento muda, as velocidades são alteradas.
+ Quando a bola colide com uma superfície plana, apenas uma das coordenadas
+ é invertida, nada mais.
+ Quando a bola bate em uma quina, as velocidades x e y são ajustadas de
+ acordo com o ângulo que a bola faz com a quina.
+\layout Subsection
+
+Níveis:
+\layout Paragraph
+
+O jogo procura os arquivos contendo os níveis em uma pasta (um diretório)
+ fixa.
+ Cada arquivo .blc na pasta corresponde ao nível.
+ Para cada arquivo .blc, deve existir um arquivo .png (imagem) com o mesmo
+ nome, correspondendo à imagem de fundo do nível.
+ Por exemplo, se existe um arquivo nivel1.blc, deve existir outro nivel1.png.
+ Caso não exista, uma imagem padrão é usada.
+ 
+\layout Paragraph
+
+A imagem deve abranger toda a área correspondente à área verde da tela.
+ O formato do arquivo .blc é apenas uma sequência de 16 linhas, cada uma
+ contendo 14 números inteiros que correspondem ao tipo de bloco sendo utilizado.
+ Cada inteiro corresponde a um bloco contido na área correspondente à área
+ verde da figura.
+ Caso o número seja negativo, isso significa que ná há bloco naquela posição.
+\layout Section
+
+Exercício 1: Criação e tratamento das imagens necessárias para o jogo1 
+\layout Paragraph
+
+Com a descrição do jogo feita, a primeira coisa é criarmos uma lista das
+ imagens necessárias.
+ Olhando para a descrição, é possível chegar à lista de imagens abaixo.
+\layout Subsection
+
+Lista de imagens
+\layout Enumerate
+
+Fundo geral - Abrange a tela inteira, uma imagem de 640x480.
+ Todo o resto é desenhado em cima dessa imagem.
+\layout Enumerate
+
+Barreira no chão, não deixa a bola passar - 600x20
+\layout Enumerate
+
+Sprite principal diminuido - 30x20
+\layout Enumerate
+
+Sprite principal tamanho natural - 40x20
+\layout Enumerate
+
+Sprite principal aumentado - 60x20
+\layout Enumerate
+
+Bloco tipo 0 - 40x20
+\layout Enumerate
+
+Bloco tipo 1 - 40x20
+\layout Enumerate
+
+Bloco tipo 2 - 40x20
+\layout Enumerate
+
+Bloco tipo 3 - 40x20
+\layout Enumerate
+
+Bola tipo 0 -20x20
+\layout Enumerate
+
+Bola tipo 1 - 20x20
+\layout Enumerate
+
+Bônus tipo 0 - 40x20
+\layout Enumerate
+
+Bônus tipo 1- 40x20
+\layout Enumerate
+
+Bônus tipo 2- 40x20
+\layout Enumerate
+
+Bônus tipo 3- 40x20
+\layout Enumerate
+
+Bônus tipo 4- 40x20
+\layout Enumerate
+
+Bônus tipo 5- 40x20
+\layout Enumerate
+
+Bônus tipo 6- 40x20
+\layout Paragraph
+
+Pronto.
+ Agora basta criar e tratar as imagens.
+ 
+\layout Subsection
+
+Criação das imagens
+\layout Standard
+
+A seguir, segue a lista de imagens criadas no blender.
+ Sinta-se livre para usar as imagens abaixo em seu jogo, mas até pelo fato
+ das imagens serem simples, recomendo usar o blender para criá-las.
+ Acesse o portal para ter acesso aos tutoriais que ensinam como usar o blender.
+ 
+\layout Enumerate
+
+
+\begin_inset Figure size 595 446
+file ../../blocos/imgs/fundo0001.eps
+width 3 100
+flags 15
+
+\end_inset 
+
+ 
+\layout Enumerate
+
+
+\begin_inset Figure size 297 9
+file ../../blocos/imgs/barreira0001.eps
+width 4 100
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 30 20
+file ../../blocos/imgs/spritep0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/sprite0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 60 20
+file ../../blocos/imgs/spriteg0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bloco0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bloco0002.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bloco0003.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bloco0004.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 20 20
+file ../../blocos/imgs/bola0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 20 20
+file ../../blocos/imgs/bolasp0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0001.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0002.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0003.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0004.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0005.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0006.eps
+flags 15
+
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Figure size 40 20
+file ../../blocos/imgs/bonus0007.eps
+flags 15
+
+\end_inset 
+
+
+\layout Subsection
+
+Tratamento das imagens
+\layout Paragraph
+
+Uma vez que todas as imagens estejam criadas, precisamos tratá-las de forma
+ que fiquem no formato na resolução de cores que queremos, e suportando
+ transparência da maneira que decidirmos.
+ No caso, decidimos que será melhor usar imagens no formato .png, resolução
+ de cores de 32bits com transparência ALPHA.
+ 
+\layout Paragraph
+
+Perceba que algumas das imagens acima são transparentes em alguns pontos.
+ Talvez não seja possível ver que alguns pontos não são totalmente transparentes
+ por causa do fundo desse documento e das capacidades do formato de arquivo
+ usado para salvar esse documento sendo lido, mas no jogo isso se tornará
+ mais claro.
+\layout Paragraph
+
+Dado um arquivo criado no blender chamado imagem.tga, por exemplo, pode-se
+ usar o programa convert, do pacote ImageMagick citado anteriormente, para
+ transformar a imagem em um arquivo com essas características.
+ Basta usar o seguinte comando:
+\layout Itemize
+
+convert -verbose -type TrueColorMatte -transparent black imagem.tga imagem.png
+\layout Paragraph
+
+Esse comando assume que toda cor preta da imagem original (arquivo imagem.tga)
+ ficará transparente na imagem gerada (arquivo imagem.png).
+ No caso de o arquivo original já ter sido feito com transparência, coisa
+ comum de se fazer usando o blender, pode-se usar o seguinte comando para
+ transformar a imagem em um .png preservando a transparência:
+\layout Itemize
+
+convert -verbose imagem.tga imagem.png
+\layout Paragraph
+
+Esse exemplo foi dado apenas para demonstrar levemente o poder do pacote
+ ImageMagick.
+ É um dos pacotes gráficos mais uteis para desenvolvedores de jogos.
+ Contudo, quando esse texto foi escrito o ImageMagick só estava disponível
+ para ambiente *nix, incluindo linux.
+ Dessa forma, apresentaremos na próxima subseção como fazer a primeira conversão
+ usando o GIMP, o programa de manipulação gráfica da GNU, disponível para
+ linux e para windows.
+\layout Paragraph
+
+Antes disso, porém, uma nota sobre a resolução escolhida.
+ Para esse jogo, escolhemos usar imagens com ALPHA.
+ Isso é algo muito requintado e permite que o designer que estiver fazendo
+ as imagens use e abuse dos recursos de transparência para deixar o jogo
+ muito bonito.
+ Contúdo, é um formato que consome muitos recursos na hora de rodar o jogo,
+ fazendo com que o jogador precise de uma boa máquina para rodar o jogo.
+\layout Paragraph
+
+No nosso caso isso não fará muita diferença, pois desenharemos poucos sprites,
+ como será discutido posteriormente, e também a tela não tem scroll, ou
+ seja, o fundo não muda.
+ Porém, mantenha esse fato em mente quando estiver desenvolvendo seus próprios
+ jogos.
+\layout Subsection
+
+Usando o GIMP para tratar uma imagem
+\layout Chapter
+
+Uma breve revisão sobre programação em C 
+\layout Paragraph
+
+Para continuar seguindo o resto deste com bom entendimento, é necessário
+ que o leitor se certifique que sabe o suficiente de programação em linguagem
+ C.
+ Esse capítulo irá disponibilizar uma breve revisão sobre esses conceitos
+ que o leitor já deve ter aprendido e irá indicar referências para aqueles
+ que precisarem de uma explicação mais elaborada sobre esses conceitos.
+\layout Section
+
+Estrutura básica de um programa
+\layout Paragraph
+
+Bem, a primeira coisa que o leitor já deve estar cansado de saber é que
+ quando um programa é feito, o programador cria um texto escrita em uma
+ linguagem entendida por seres humanos e usa um compilador para transformar
+ o texto feito nessa linguagem para uma lista de instruções que serão executadas
+ pelo processador da máquina.
+ Uma vez compilado, o programa pode ser executado, isso é, carregado para
+ a memória do micro e ter suas instruções executadas.
+\layout Paragraph
+
+O estudo da arquitetura de um computador pode ser dividido em três camadas
+ distintas.
+ A primeira camada é o hardware, ou seja, o computador em si, como equipamento.
+ A segunda camada é o sistema operacional, que tem a função de controlar
+ o hardware.
+ A terceira é a camada de aplicações, que tem a função de se comunicar com
+ o sistema operacional para que o hardware faça aquilo que o usuário quer.
+\layout Paragraph
+
+Em sistemas atuais (como linux ou windows>=95), ditos sistemas de modo protegido
+ de memória ou multi-tarefa, essas três camadas teoricamente são bem distintas
+ (ou deveriam ser).
+ No caso de sistemas mais antigos, como o DOS, a segunda e a terceira camada
+ se confundem, sendo que o programa de aplicação acessa diretamente o hardware.
+ Não estudaremos sistemas antigos como o DOS, pela sua morte iminente.
+\layout Paragraph
+
+Dessa forma, os programas que faremos nesse curso, assim como qualquer programa
+ em C, consistem em várias instruções de código que são executadas em sequência
+ e pertencem à terceira camada, a de aplicação.
+ Eis um típico programa em C:
+\layout Standard
+
+//prog01.c
+\layout Standard
+
+#include <stdio.h>
+\layout Standard
+
+\SpecialChar ~
+
+\layout Standard
+
+int main () {
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ int i;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ i=5;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("O valor de i é %d
+\backslash 
+n", i);
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O leitor deve recordar-se que linhas que começem com // ou texto entre /*
+ e */ são considerados comentários pelo compilador e são ignorados.
+\layout Paragraph
+
+Todos os programas em C são divididos em funções, trechos de código que
+ executam determinada tarefa, e a primeira função a ser executada no programa
+ é a função denominada 
+\begin_inset Quotes eld
+\end_inset 
+
+main
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ A função main do programa acima contém apenas três comandos.
+ A primeira linha é apenas um indicativo de que o programa está usando uma
+ certa região de memória para guardar um número inteiro, e portanto essa
+ região deve ser reservada pelo sistema operacional quando o programa for
+ executado.
+ A segunda linha é o primeiro comando executado, que coloca o valor 5 nessa
+ região de memória.
+ Esse comando corresponde a instruções diretas do processador que realizam
+ diretamente essa função, acessando a memória.
+\layout Paragraph
+
+Já o segundo comando (terceira linha), imprime um texto na tela, usando
+ o valor do inteiro.
+ Esse comando é uma chamada de função, no caso, a função printf.
+ Essa função é disponível de antemão porque faz parte de uma biblioteca
+ de funções, a biblioteca padrão C.
+ Praticamente todos os ambientes de programação atuais disponibilizam essa
+ biblioteca.
+ Mas como essa função, que já estava feita quando começamos a escrever nossa
+ programa, faz? Bem, ela executa algumas intruções semelhantes as instruções
+ do primeiro comando, e então faz uma chamada de sistema (system call).
+ 
+\layout Paragraph
+
+Uma chamada de sistema é um tipo de instrução especial, também executada
+ pelo processador, mas que não executa uma expressão matemática ou operação
+ na memória, mas sim pede ao sistema operacional para fazer algo, normalmente
+ acessar o hardware.
+ Como a função imprime texto na tela, ela precisa acessar o hardware.
+ Como nosso programa está na camada de aplicação, não pode se comunicar
+ diretamente com o hardware, então ele pede para a camada dois, o sistema
+ operacional, que pode acessar o hardware diretamente, para imprimir o texto
+ no dispositivo de saida padrão.
+\layout Paragraph
+
+O último comando é uma chamada de sistema direta, pois diz ao sistema operaciona
+l que o programa terminou com código de erro 0 (zero = sem erros).
+ O sistema operacional pára de executar o programa e libera a região de
+ memória que ele estava usando.
+ Uma nota deve ser feita sobre a primeira linha do programa.
+ A primeira linha apenas diz ao compilador para ler o arquivo stdio.h antes
+ de compilar o arquivo atual.
+ Isso é necessário para que o compilador saiba que a função printf exista,
+ pois é nesse arquivo (stdio.h) que está escrito que essa função existe.
+\layout Paragraph
+
+Muitos programadores C costumam conseguir fazer seus programas mesmo sem
+ entender a fundo o que os comandos significam, algo que foi explicado agora.
+ De qualquer forma, o exemplo serviu para demonstrar a estrutura geral de
+ um programa em C.
+ O programador começa escrevendo a função main, que contém comandos diversos,
+ incluindo aí expressões matemáticas e operações de memória diretas, chamadas
+ sistemas e chamadas para outras funções.
+ Todo programa é feito a partir disso em um sistema operacional como linux
+ ou windows.
+\layout Section
+
+Condicionais
+\layout Paragraph
+
+Vimos na seção anterior algumas das operações que um programa pode executar.
+ Vamos dividir essas operações formalmente, pelo seu tipo:
+\layout Enumerate
+
+Chamadas de sistema
+\layout Enumerate
+
+Chamadas de funções 
+\layout Enumerate
+
+Instruções matemáticas (multiplicação, adição, divizão, subtração, operações
+ com números binários, etc.) - exemplo: 8+x;
+\layout Enumerate
+
+Operações de memória (colocar um valor em uma variável, alterar uma string
+ de texto, copiar uma região de memória para outra, etc.) exemplo: i=8;
+\layout Enumerate
+
+Condicionais (alteram o fluxo de execução do programa)
+\layout Enumerate
+
+Loops (permitem que um código seja executados várias vezes, sem necessidade
+ de reescrevê-lo no texto fonte)
+\layout Paragraph
+
+Os 4 primeiros tipos de operações são intuitivos e já foram brevemente recordado
+s na seção anterior.
+ Nessa seção veremos o quinto tipo e na seguinte o sexto.
+ É preciso ficar claro que praticamente qualquer linguagem de programação
+ contém instruções para executar essas tarefas.
+ Isso acontece porque aquilo que é escrito em uma linguagem de programação
+ é depois transformado em uma lista de instruções a serem executadas pelo
+ processador e, portanto, depende daquilo que os processadores sabem fazer.
+\layout Paragraph
+
+São basicamente esses os tipos de operações que os processadores tradicionais
+ de hoje sabem executar, mas existem processadores que sabem multiplicar
+ matrizes diretamente, outros que sabem executar mais de um código ao mesmo
+ tempo, etc.
+ Dessa forma, faria sentido outro tipo de linguagem que aceitasse também
+ novos tipos de instruções de forma a tirar proveito desses recursos.
+ Hoje, como veremos, esses tipos de instruções são mais que suficientes
+ para criarmos 99% dos programas existêntes no mundo, incluindo aí os mais
+ complexos.
+\layout Paragraph
+
+Mas vamos às condicionais.
+ Observe o programa C a seguir:
+\layout Standard
+
+//prog02.c
+\layout Standard
+
+#include <stdio.h>
+\layout Standard
+
+\SpecialChar ~
+
+\layout Standard
+
+int main () {
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ int i;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("Digite o valor de i:");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ scanf("%d", &i);
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ if (i>50)
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ \SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+printf("O valor de i é maior que 50
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ else if (i>10)
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("O valor de i é menor que 50 mas é maior que 10
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ else
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("O valor de i é menor que 10!
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ #ifdef _STDIO_H_
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("O arquivo stdio.h foi incluido!
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ #endif
+\layout Standard
+
+\SpecialChar ~
+
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ switch(i) {
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 1:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("i vale 1
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ break;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 2:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("i vale 2
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ break;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 10:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 11:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 12:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 13:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ case 14:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("i tem um valor entre 10 e 14
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ break;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ default:
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ printf("i NÃO vale nem 1, nem 2, nem nenhum valor entre 10 e 14
+\backslash 
+n");
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ break;
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ }
+\layout Standard
+
+\SpecialChar ~
+
+\layout Standard
+
+\SpecialChar ~
+\SpecialChar ~
+\SpecialChar ~
+ return 0;
+\layout Standard
+
+}
+\layout Paragraph
+
+O programa acima recebe um número inteiro digitado pelo usuário e insere
+ seu valor na variável i.
+ A função scanf também faz uma chamada de sistema, assim como a função printf,
+ para obter a entrada da entrada padrão, normalmente o teclado.
+ Depois que o usuário digitou o valor de i, são usadas estruturas condicionais
+ do resto do programa para verificar o valor de i e imprimir mensagens correspon
+dentes.
+ Abaixo, é listada cada estrutura condicional que usamos e 
+\layout Section
+
+Loops
+\layout Section
+
+Estruturas (structs)
+\layout Section
+
+Funções 
+\layout Section
+
+Outros conhecimentos necessários
+\layout Section
+
+Exercícios (esses exercícios deveram dar ao leitor a noção se ele tem ou
+ não os conhecimentos necessários sobre programação para prosseguir o curso)
+\layout Section
+
+Indicação de referências e cursos sobre C
+\layout Chapter
+
+Programação
+\layout Section
+
+Apresentação das ferramentas usadas no restante do curso (cygwin ou DevC++
+ no windows ou linux, ambos com SDL)
+\layout Subsection
+
+Como instalar cygwin (windows) ou gcc (linux)
+\layout Subsection
+
+Como instalar SDL & cia
+\layout Section
+
+Por que usar essas ferramentas e não outras (explicar que quem deve ser
+ competente é o desenvolvedor e não só a ferramenta)
+\layout Section
+
+Formas de criar um jogo - IDE Versus Makefile
+\layout Section
+
+Bibliotecas - descrição geral
+\layout Section
+
+Edição de código (XEmacs)
+\layout Section
+
+Makefile
+\layout Section
+
+DDD, Data Display Debugger (Para depurar código em linux)
+\layout Section
+
+Insight
+\layout Section
+
+Exercício (criando um programa simples em SDL que exibe um texto na tela,
+ usando as ferramentas acima)
+\layout Chapter
+
+Um pouco de prática, programando brincadeiras em SDL
+\layout Section
+
+Exibindo uma pequena animação
+\layout Section
+
+Rodando em tela cheia
+\layout Section
+
+Sprite que se move ao comando de teclado 
+\layout Section
+
+Colisão simples de sprites
+\layout Section
+
+Andando pela paisagem - scroll simples
+\layout Section
+
+Exercício (preparando para o jogo1)
+\layout Chapter
+
+Usando sons
+\layout Section
+
+Como funciona o som
+\layout Section
+
+Formatos de arquivos de som
+\layout Section
+
+Usando sons em SDL
+\layout Section
+
+Mais algumas brincadeiras
+\layout Chapter
+
+Introdução (leve) a orientação a objetos
+\layout Section
+
+Diferença entre um programa estruturado e um orientado a objeto
+\layout Section
+
+Orientação a objetos não está associada com a linguagem de programação
+\layout Section
+
+Orientação a objetos em C (a que usaremos no curso)
+\layout Section
+
+Classes e objetos
+\layout Section
+
+Outras noções (herança, templates, UML, etc.
+ Não serão ensinados, mas a existência será citada)
+\layout Section
+
+Exemplo (O programa 6.6 feito em C orientado)
+\layout Section
+
+Exercícios (perguntas e respostas)
+\layout Chapter
+
+Projeto 1 (Finalmente)
+\layout Section
+
+Descrição do jogo
+\layout Paragraph
+
+A primeira estapa do desenvolvimento é a criação da descrição formal do
+ jogo.
+ Essa descrição já foi feita na seção 3.6, antes de criamos as imagens necessária
+s para uso no jogo.
+\layout Section
+
+Fluxograma e cronograma de projeto
+\layout Section
+
+Análise e modelamento (como será o modelamento de classes do jogo, ou seja,
+ orientação a objetos do jogo)
+\layout Section
+
+Aprontando os recursos necessários (no caso, apenas as imagens e alguns
+ sons)
+\layout Section
+
+Implementação
+\layout Section
+
+Testes, Depurações e possíveis melhoramentos
+\layout Section
+
+O que vem a seguir (descrição dos próximos módulos)
+\the_end

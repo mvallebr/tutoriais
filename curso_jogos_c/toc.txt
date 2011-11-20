@@ -1,0 +1,87 @@
+I - Módulo 1
+/////////////////////////////////////////////////////////////////////
+0 - Prefácio
+0.1 - Dedicação
+
+1 - Introdução - Sobre o que o curso vai tratar
+1.1 - Audiência esperada - Para quem o curso se destina
+1.2 pré-requisitos - O que é necessário saber para fazer o curso
+
+2 - Noções básicas
+2.1 - Um pouco de história (Breve história de como eram desenvolvidos jogos
+antigamente, como é
+agora e quais são as tendências)
+2.2 - Conceitos básicos sobre desenvolvimento de jogos
+2.2.1 - Etapas na criação de um jogo
+2.2.2 - Tipos de jogos (tabuleiro, 2D, 3D, extesíveis)
+2.2.3 - Profissionais que participam da criação de um jogo
+2.2.4 - Formas de criar um jogo (linguagens de programação, ferramentas
+prontas)
+2.3 - Esclarecimentos de dúvidas
+
+3 - Noções sobre recursos gráficos (por que gráficos são necessários em jogos)
+3.1 - Como gráficos podem ser usados em jogos
+3.2 - Como criar gráficos a serem utilizados em jogos (que ferramentas usar)
+3.3 - Trabalhando com artistas gráficos
+3.3.1 - Quais são as responsabilidades dos artistas
+3.3.2 - Quais são as responsabilidades dos programadores
+3.3.3 - A semelhança entre criação de jogos e outros tipos de mídia
+3.3 - Noções sobre formatos gráficos (tipos de arquivo, resolução de ponto e
+cores, Alpha, transparência absoluta, bitmaps, máscaras e pixmaps)
+3.4 - Sprites, o que são?
+3.5 - Exercício simples 1: Criação e tratamento das imagens necessárias para
+o jogo1 (descrição do jogo1, que será do estílo ZONG) 
+
+4 - Uma breve revisão sobre programação em C (módulo bem curto)
+4.1 - Condicionais
+4.2 - Loops
+4.3 - Estruturas (structs)
+4.4 - Funções 
+4.5 - Outros conhecimentos necessários
+4.6 - Exercícios (esses exercícios deveram dar ao leitor a noção se ele tem ou
+não os conhecimentos necessários sobre programação para prosseguir o curso)
+4.7 - Indicação de referências e cursos sobre C
+
+5 - Programação
+5.1 - Apresentação das ferramentas usadas no restante do curso (cygwin ou
+DevC++ no windows ou linux, ambos com SDL)
+5.1.1 - Como instalar cygwin (windows) ou gcc (linux)
+5.1.2 - Como instalar SDL & cia
+5.2 - Por que usar essas ferramentas e não outras (explicar que quem deve ser
+competente é o desenvolvedor e não só a ferramenta)
+5.3 - Formas de criar um jogo - IDE Versus Makefile
+5.4 - Bibliotecas - descrição geral
+5.5 - Edição de código (XEmacs)
+5.6 - Makefile
+5.7 - DDD, Data Display Debugger (Para depurar código)
+5.8 - Exercício (criando um programa simples em SDL que exibe um texto na
+tela, usando as ferramentas acima)
+
+6 - Um pouco de prática, programando brincadeiras em SDL
+6.1 - Exibindo uma pequena animação
+6.2 - Rodando em tela cheia
+6.3 - Sprite que se move ao comando de teclado 
+6.4 - Colisão simples de sprites
+6.5 - Andando pela paisagem - scroll simples
+6.6 - Exercício (preparando para o jogo1)
+
+7 - Introdução (leve) a orientação a objetos
+7.1 - Diferença entre um programa estruturado e um orientado a objeto
+7.2 - Orientação a objetos não está associada com a linguagem de programação
+7.3 - Orientação a objetos em C (a que usaremos no curso)
+7.4 - Classes e objetos
+7.5 - Outras noções (herança, templates, UML, etc. Não serão ensinados, mas a
+existência será citada)
+7.6 - Exemplo (O programa 6.6 feito em C orientado)
+7.7 - Exercícios (perguntas e respostas)
+
+8 - Projeto 1 (Finalmente)
+8.1 - Descrição do jogo
+8.2 - Fluxograma e cronograma de projeto
+8.3 - Análise e modelamento (como será o modelamento de classes do jogo, ou
+seja, orientação a objetos do jogo)
+8.4 - Aprontando os recursos necessários (no caso, apenas as imagens e alguns
+sons)
+8.5 - Implementação
+8.6 - Testes, Depurações e possíveis melhoramentos
+8.7 - O que vem a seguir (descrição dos próximos módulos)

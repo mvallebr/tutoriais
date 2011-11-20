@@ -1,0 +1,11 @@
+Introdução
+Audiência esperada e pré-requisitos
+Por que o kylix/Delphi?
+Instalando o Kylix/Delphi
+As etapas de construção do jogo
+Descrição do jogo e da interface
+Imagens
+Análise
+Implementação da interface
+Implementação do código
+Código fonte completo

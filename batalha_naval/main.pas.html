@@ -1,0 +1,544 @@
+
+<html>
+<head>
+<title>../../batalha_naval/main.pas</title>
+<meta name="generator" content="pas2html 0.9.1">
+<meta name="date" content="2001-11-22T07:05:05+00:00">
+</head>
+
+<body bgcolor="#FFFFFF">
+<pre width="80">unit main;
+
+interface
+
+uses
+  SysUtils, Types, Classes, Variants, QGraphics, QControls, QForms, QDialogs,
+  QMenus, QTypes, QImgList, QExtCtrls, QComCtrls, QStdCtrls;
+
+<strong><font color="#228B22">type</font></strong>
+  TTabuleiro = array[1..10, 1..10] <font color="#4169E1">of</font> integer;
+  TfrmMain = class(TForm)
+    MainMenu1: TMainMenu;
+    Jogo1: TMenuItem;
+    Ajuda1: TMenuItem;
+    Novo1: TMenuItem;
+    N1: TMenuItem;
+    Sair1: TMenuItem;
+    Sobre1: TMenuItem;
+    ListaDeImagens: TImageList;
+    BarraDeEstado: TStatusBar;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Label1: TLabel;
+    ImgJogador: TImage;
+    Panel3: TPanel;
+    imgComputador: TImage;
+    Label2: TLabel;
+    Shape1: TShape;
+    <strong><font color="#4169E1">procedure Sobre1Click</font></strong>(Sender: TObject);
+    <strong><font color="#4169E1">procedure Sair1Click</font></strong>(Sender: TObject);
+    <strong><font color="#4169E1">procedure Novo1Click</font></strong>(Sender: TObject);
+    <strong><font color="#4169E1">procedure FormPaint</font></strong>(Sender: TObject);
+    <strong><font color="#4169E1">procedure FormCreate</font></strong>(Sender: TObject);
+    <strong><font color="#4169E1">procedure imgComputadorMouseUp</font></strong>(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+  private
+    <font color="#B22222">{ Private declarations }</font>
+    TabuleiroJogador: TTabuleiro;
+    TabuleiroComputador: TTabuleiro;
+    Jogando : boolean;
+    ultimo_comp_x, ultimo_comp_y: integer;
+    ultimo_x, ultimo_y: integer;
+    <strong><font color="#4169E1">procedure computadorJoga</font></strong>;
+    <strong><font color="#4169E1">function VerificaVitoria</font></strong>(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro): boolean;
+    <strong><font color="#4169E1">function VerificaTabuleiro</font></strong>(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro; x, y: integer): boolean;
+    <strong><font color="#4169E1">function Redundante</font></strong>(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro; x, y: integer): boolean;
+  public
+    <font color="#B22222">{ Public declarations }</font>
+  <strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#228B22">var</font></strong>
+  frmMain: TfrmMain;
+
+<strong><font color="#228B22">const</font></strong>
+	num_navios=3;
+   num_porta_avioes=1;
+   num_submarinos=5;
+
+implementation
+
+<font color="#B22222">{$R *.xfm}</font>
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.Sobre1Click(Sender: TObject);
+<strong><font color="#4169E1">begin</font></strong>
+	ShowMessage(<font color="#666666">'Aprenda como fazer esse jogo acessando o site http://mlinuxer.cjb.net/'</font>);
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.Sair1Click(Sender: TObject);
+<strong><font color="#4169E1">begin</font></strong>
+	Close;
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.Novo1Click(Sender: TObject);
+<strong><font color="#228B22">var</font></strong>
+	i, j, k, l: integer;
+   direcao, ok: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	BarraDeEstado.SimpleText := <font color="#666666">'Clique em uma regi&atilde;o na imagem direita para atirar...'</font>;
+	Jogando := true;
+	//Refaz as matrizes e atualiza a tela
+   //Primeiro, inicialize tudo com zero (&aacute;gua)
+   <font color="#4169E1">for</font> i := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	TabuleiroJogador[i, j] := 0;
+         TabuleiroComputador[i, j] := 0;
+      <strong><font color="#4169E1">end</font></strong>;
+   //Agora, adicione os porta avi&otilde;es
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_porta_avioes <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+		   direcao := random(2);
+		   <font color="#4169E1">if</font> (direcao=0<font color="#B22222">(*vertical*)</font>) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		   	i := 1+random(10);
+		      j := 1+random(10-5);
+            <font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+4 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroJogador, i, l)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+4 <font color="#4169E1">do</font>
+            		TabuleiroJogador[i, l] := 5+(l-j);
+		   <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong> <font color="#B22222">(*horizontal*)</font>
+			   i := 1+random(10-5);
+		      j := 1+random(10);
+            <font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+4 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroJogador, l, j)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+4 <font color="#4169E1">do</font>
+            		TabuleiroJogador[l, j] := 5+(l-i);
+		   <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+   //Agora, adicione os navios
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_navios <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+		   direcao := random(2);
+		   <font color="#4169E1">if</font> (direcao=0<font color="#B22222">(*vertical*)</font>) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		   	i := 1+random(10);
+		      j := 1+random(10-3);
+            <font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+2 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroJogador, i, l)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+2 <font color="#4169E1">do</font>
+            		TabuleiroJogador[i, l] := 2+(l-j);
+		   <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong> <font color="#B22222">(*horizontal*)</font>
+			   i := 1+random(10-3);
+		      j := 1+random(10);
+            <font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+2 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroJogador, l, j)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+2 <font color="#4169E1">do</font>
+            		TabuleiroJogador[l, j] := 2+(l-i);
+		   <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+   //Agora, adicione os submarinos
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_submarinos <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+	   	i := 1+random(10);
+	      j := 1+random(10);
+        	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroJogador, i, j)) <font color="#4169E1">then</font>
+        		ok:=0
+         <font color="#4169E1">else</font>
+         	TabuleiroJogador[i, j] := 1;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+   //Agora &eacute; a vez <font color="#4169E1">do</font> tabuleiro <font color="#4169E1">do</font> computador
+   //Adicione os porta avi&otilde;es
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_porta_avioes <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+		   direcao := random(2);
+		   <font color="#4169E1">if</font> (direcao=0<font color="#B22222">(*vertical*)</font>) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		   	i := 1+random(10);
+		      j := 1+random(10-5);
+            <font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+4 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroComputador, i, l)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+4 <font color="#4169E1">do</font>
+            		TabuleiroComputador[i, l] := 5+(l-j);
+		   <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong> <font color="#B22222">(*horizontal*)</font>
+			   i := 1+random(10-5);
+		      j := 1+random(10);
+            <font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+4 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroComputador, l, j)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+4 <font color="#4169E1">do</font>
+            		TabuleiroComputador[l, j] := 5+(l-i);
+		   <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+   //Agora, adicione os navios
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_navios <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+		   direcao := random(2);
+		   <font color="#4169E1">if</font> (direcao=0<font color="#B22222">(*vertical*)</font>) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		   	i := 1+random(10);
+		      j := 1+random(10-3);
+            <font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+2 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroComputador, i, l)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := j <font color="#4169E1">to</font> j+2 <font color="#4169E1">do</font>
+            		TabuleiroComputador[i, l] := 2+(l-j);
+		   <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong> <font color="#B22222">(*horizontal*)</font>
+			   i := 1+random(10-3);
+		      j := 1+random(10);
+            <font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+2 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+            	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroComputador, l, j)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+               	ok:=0;
+                  break;
+               <strong><font color="#4169E1">end</font></strong>;
+            <strong><font color="#4169E1">end</font></strong>;
+            <font color="#4169E1">if</font> (ok&lt;&gt;0) <font color="#4169E1">then</font>
+            	<font color="#4169E1">for</font> l := i <font color="#4169E1">to</font> i+2 <font color="#4169E1">do</font>
+            		TabuleiroComputador[l, j] := 2+(l-i);
+		   <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+   //Agora, adicione os submarinos
+   <font color="#4169E1">for</font> k := 1 <font color="#4169E1">to</font> num_submarinos <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	ok:=0;
+   	<font color="#4169E1">while</font>(ok=0) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+	      ok:=1;
+	   	i := 1+random(10);
+	      j := 1+random(10);
+        	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> VerificaTabuleiro(TabuleiroComputador, i, j)) <font color="#4169E1">then</font>
+        		ok:=0
+         <font color="#4169E1">else</font>
+         	TabuleiroComputador[i, j] := 1;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+
+   //Desenhe tudo...
+   FormPaint(Sender);
+<strong><font color="#4169E1">end</font></strong>;
+
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.FormPaint(Sender: TObject);
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	//Desenha os tabuleiros
+   <font color="#4169E1">for</font> i := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	//Tabuleiro <font color="#4169E1">do</font> jogador
+      	<font color="#4169E1">if</font> (TabuleiroJogador[i, j]&lt;1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		      ListaDeImagens.Draw(ImgJogador.Canvas, (i-1)*32, (j-1)*32,
+   		   	TabuleiroJogador[i, j]);
+         <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong>
+         	ListaDeImagens.Draw(ImgJogador.Canvas, (i-1)*32, (j-1)*32,
+   		   	TabuleiroJogador[i, j]-1000);
+            //Desenha junto um X
+            <font color="#4169E1">if</font> ((i=ultimo_x) <font color="#4169E1">and</font> (j=ultimo_y)) <font color="#4169E1">then</font>
+	            ImgJogador.Canvas.Pen.Color := clGreen
+            <font color="#4169E1">else</font> <font color="#4169E1">if</font> (TabuleiroJogador[i, j]=1000) <font color="#4169E1">then</font>
+	            ImgJogador.Canvas.Pen.Color := clBlue
+            <font color="#4169E1">else</font>
+   	         ImgJogador.Canvas.Pen.Color := clRed;
+            ImgJogador.Canvas.Pen.Width := 3;
+            ImgJogador.Canvas.MoveTo((i-1)*32, (j-1)*32);
+     	      ImgJogador.Canvas.LineTo((i)*32, (j)*32);
+            ImgJogador.Canvas.MoveTo((i)*32, (j-1)*32);
+            ImgJogador.Canvas.LineTo((i-1)*32, (j)*32);
+         <strong><font color="#4169E1">end</font></strong>;
+         //Tabuleiro <font color="#4169E1">do</font> computador
+	      <font color="#4169E1">if</font> (TabuleiroComputador[i, j]&lt;1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+		      ListaDeImagens.Draw(ImgComputador.Canvas, (i-1)*32, (j-1)*32,
+   		   	0);
+         <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong>
+         	ListaDeImagens.Draw(ImgComputador.Canvas, (i-1)*32, (j-1)*32,
+   		   	TabuleiroComputador[i, j]-1000);
+            //Desenha junto um X
+     	      <font color="#4169E1">if</font> (TabuleiroComputador[i, j]=1000) <font color="#4169E1">then</font>
+	            ImgComputador.Canvas.Pen.Color := clBlue
+            <font color="#4169E1">else</font>
+   	         ImgComputador.Canvas.Pen.Color := clRed;
+            ImgComputador.Canvas.Pen.Width := 3;
+            ImgComputador.Canvas.MoveTo((i-1)*32, (j-1)*32);
+     	      ImgComputador.Canvas.LineTo((i)*32, (j)*32);
+            ImgComputador.Canvas.MoveTo((i)*32, (j-1)*32);
+            ImgComputador.Canvas.LineTo((i-1)*32, (j)*32);
+//            ShowMessage(IntToStr(i) + <font color="#666666">' '</font> + IntToStr(j));
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.FormCreate(Sender: TObject);
+<strong><font color="#4169E1">begin</font></strong>
+	//Gera tabela de n&uacute;mero aleat&oacute;rios
+	randomize;
+   //Inicializa a jogada inicial <font color="#4169E1">do</font> computador
+   ultimo_comp_x := 1 + (random(10));
+   ultimo_comp_y := 1 + (random(10));
+   ultimo_x := -1;
+   ultimo_y := -1;
+   //Inicia automaticamente um novo jogo, como se o menu tivesse sido acessado
+	Novo1Click(sender);
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.imgComputadorMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> Jogando) <font color="#4169E1">then</font> exit;
+	i:=1+(X div 32); //Calcula os &iacute;ndices baseando-se nas coordenadas de tela
+   j:=1+(Y div 32);
+   <font color="#4169E1">if</font> (i&lt;1) <font color="#4169E1">then</font> exit; //Garante a integridade dos &iacute;ndices
+   <font color="#4169E1">if</font> (i&gt;10) <font color="#4169E1">then</font> exit;
+   <font color="#4169E1">if</font> (j&lt;1) <font color="#4169E1">then</font> exit;
+   <font color="#4169E1">if</font> (j&gt;10) <font color="#4169E1">then</font> exit;
+   <font color="#4169E1">if</font> (TabuleiroComputador[i,j]&gt;=1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+   	BarraDeEstado.SimpleText := <font color="#666666">'Este local j&aacute; foi atingido...'</font>;
+      exit; //Sai da fun&ccedil;&atilde;o
+   <strong><font color="#4169E1">end</font></strong>;
+   TabuleiroComputador[i,j] := TabuleiroComputador[i,j] + 1000;
+   <font color="#4169E1">if</font> (VerificaVitoria(TabuleiroComputador)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+	   FormPaint(Sender);
+   	ShowMessage(<font color="#666666">'Parab&eacute;ns!! Voc&ecirc; venceu o jogo!!!!'</font>);
+      BarraDeEstado.SimpleText := <font color="#666666">'Voc&ecirc; venceu!'</font>;
+      Jogando := false;
+      exit;
+   <strong><font color="#4169E1">end</font></strong>;
+   BarraDeEstado.SimpleText := <font color="#666666">'Estou jogando...'</font>;
+   computadorJoga;
+   BarraDeEstado.SimpleText := BarraDeEstado.SimpleText + <font color="#666666">'Sua vez!'</font>;
+   <font color="#4169E1">if</font> (VerificaVitoria(TabuleiroJogador)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+	   FormPaint(Sender);
+   	ShowMessage(<font color="#666666">'Voc&ecirc; perdeu... :-( Boa sorte na pr&oacute;xima...'</font>);
+      BarraDeEstado.SimpleText := <font color="#666666">'Voc&ecirc; perdeu... ;-('</font>;
+      Jogando := false;
+      exit;
+   <strong><font color="#4169E1">end</font></strong>;
+   FormPaint(Sender);
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">procedure TfrmMain</font></strong>.computadorJoga;
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+   ok: boolean;
+   mini, maxi, minj, maxj: integer;
+   possivel_acertar: boolean;
+   num_acertos_corrente: integer; //N&uacute;mero de acertos no barco atual
+   num_correntex, num_correntey: integer; //N&uacute;mero de partes <font color="#4169E1">do</font> barco atual
+   tamanhomin, tamanhomax: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	//Acha a regi&atilde;o a tentar acertar  e
+	//N&atilde;o deixa coordenadas sairem <font color="#4169E1">do</font> tabuleiro
+  	tamanhomin:=0;
+  	tamanhomax:=0;
+   <font color="#4169E1">case</font> (TabuleiroJogador[ultimo_comp_x, ultimo_comp_y]) <font color="#4169E1">of</font>
+	1002,1003,1004: <strong><font color="#4169E1">begin</font></strong>
+   	tamanhomin:=TabuleiroJogador[ultimo_comp_x, ultimo_comp_y]-1002;
+      tamanhomax:=1004-TabuleiroJogador[ultimo_comp_x, ultimo_comp_y];
+   <strong><font color="#4169E1">end</font></strong>;
+   1005,1006,1007,1008,1009: <strong><font color="#4169E1">begin</font></strong>
+     	tamanhomin:=TabuleiroJogador[ultimo_comp_x, ultimo_comp_y]-1005;
+      tamanhomax:=1009-TabuleiroJogador[ultimo_comp_x, ultimo_comp_y];
+   <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+   mini := ultimo_comp_x-tamanhomin;
+   maxi := ultimo_comp_x+tamanhomax;
+   minj := ultimo_comp_y-tamanhomin;
+   maxj := ultimo_comp_y+tamanhomax;
+  	<font color="#4169E1">if</font> (mini&lt;1)  <font color="#4169E1">then</font> mini:=1;
+   <font color="#4169E1">if</font> (minj&lt;1)  <font color="#4169E1">then</font> minj:=1;
+   <font color="#4169E1">if</font> (maxi&gt;10) <font color="#4169E1">then</font> maxi:=10;
+   <font color="#4169E1">if</font> (maxj&gt;10) <font color="#4169E1">then</font> maxj:=10;
+
+   //Verifica se o computador j&aacute; poderia saber a dire&ccedil;&atilde;o <font color="#4169E1">do</font> barco se
+   // fosse um humano (duas partes <font color="#4169E1">do</font> barco acertadas)
+   num_acertos_corrente:=0;
+   num_correntex:=0;
+   num_correntey:=0;
+   <font color="#4169E1">for</font> i := mini <font color="#4169E1">to</font> maxi <font color="#4169E1">do</font>
+     	<font color="#4169E1">if</font> (TabuleiroJogador[i, ultimo_comp_y]&gt;0) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+         <font color="#4169E1">if</font> (TabuleiroJogador[i, ultimo_comp_y]&gt;1000) <font color="#4169E1">then</font>
+         	num_acertos_corrente:=num_acertos_corrente+1;
+         <font color="#4169E1">if</font> (TabuleiroJogador[i, ultimo_comp_y]&lt;&gt;1000) <font color="#4169E1">then</font>
+	  			num_correntex:=num_correntex+1;
+      <strong><font color="#4169E1">end</font></strong>;
+  	<font color="#4169E1">for</font> j := minj <font color="#4169E1">to</font> maxj <font color="#4169E1">do</font>
+		<font color="#4169E1">if</font> (TabuleiroJogador[ultimo_comp_x, j]&gt;0) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+         <font color="#4169E1">if</font> (TabuleiroJogador[ultimo_comp_x, j]&gt;1000) <font color="#4169E1">then</font>
+         	num_acertos_corrente:=num_acertos_corrente+1;
+         <font color="#4169E1">if</font> (TabuleiroJogador[ultimo_comp_x, j]&lt;&gt;1000) <font color="#4169E1">then</font>
+	         num_correntey:=num_correntey+1;
+      <strong><font color="#4169E1">end</font></strong>;
+   <font color="#4169E1">if</font> (num_acertos_corrente&gt;1) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+   	<font color="#4169E1">if</font> ((num_correntex)&gt;(num_correntey)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+      	maxj := ultimo_comp_y;
+         minj := ultimo_comp_y;
+      <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong>
+	      maxi := ultimo_comp_x;
+         mini := ultimo_comp_x;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong> <font color="#4169E1">else</font> <strong><font color="#4169E1">begin</font></strong>
+	   <font color="#4169E1">if</font> (mini&lt;ultimo_comp_x-1) <font color="#4169E1">then</font> mini:=ultimo_comp_x-1;
+	   <font color="#4169E1">if</font> (maxi&gt;ultimo_comp_x+1) <font color="#4169E1">then</font> maxi:=ultimo_comp_x+1;
+	   <font color="#4169E1">if</font> (minj&lt;ultimo_comp_y-1) <font color="#4169E1">then</font> minj:=ultimo_comp_y-1;
+	   <font color="#4169E1">if</font> (maxj&gt;ultimo_comp_y+1) <font color="#4169E1">then</font> maxj:=ultimo_comp_y+1;
+   <strong><font color="#4169E1">end</font></strong>;
+
+	//Verifica se h&aacute; algo a ser acertado ao lado da &uacute;ltima jogada
+   possivel_acertar:=false;
+   <font color="#4169E1">for</font> i := mini <font color="#4169E1">to</font> maxi <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := minj <font color="#4169E1">to</font> maxj <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	<font color="#4169E1">if</font> ((TabuleiroJogador[i, j]&gt;0) <font color="#4169E1">and</font> (TabuleiroJogador[i, j]&lt;1000)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+				possivel_acertar:=true;
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+
+   <font color="#4169E1">if</font> (<font color="#4169E1">not</font> (<font color="#B22222">(*(ultimo_comp_acertou) and *)</font>(possivel_acertar))) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+   	//Se n&atilde;o passar por aqui, &eacute; por que somente a regi&atilde;o ao lado da
+      //  posi&ccedil;&atilde;o (x,y) no tabuleiro da &uacute;ltima rodada deve ser tentada
+      //Se passar por aqui, ent&atilde;o qualquer parte <font color="#4169E1">do</font> tabuleiro deve ser tentada
+      mini:=1; maxi:=10;
+      minj:=1; maxj:=10;
+   <strong><font color="#4169E1">end</font></strong>;
+
+	//Processa a jogada <font color="#4169E1">do</font> computador
+   ok := false;
+   <font color="#4169E1">while</font> (<font color="#4169E1">not</font> ok) <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+   	i := mini+random(maxi-mini+1); //"Chute" valores dentro da faixa
+   	j := minj+random(maxj-minj+1);
+      <font color="#4169E1">if</font> (TabuleiroJogador[i, j]&lt;1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong> //Ainda n&atilde;o foi acertado
+      	<font color="#4169E1">if</font> (<font color="#4169E1">not</font> Redundante(TabuleiroJogador, i, j)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+				TabuleiroJogador[i, j] := TabuleiroJogador[i, j] + 1000;
+		   	<font color="#4169E1">if</font> (TabuleiroJogador[i, j]&lt;&gt;1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong> //Se n&atilde;o <font color="#4169E1">for</font> &aacute;gua
+					ultimo_comp_x := i;
+					ultimo_comp_y := j;
+		   	<strong><font color="#4169E1">end</font></strong>;
+		  		ok := true;
+            BarraDeEstado.SimpleText := BarraDeEstado.SimpleText +
+            	<font color="#666666">'  Joguei em: ('</font>+IntToStr(i)+<font color="#666666">','</font>+IntToStr(j)+<font color="#666666">')  '</font>;
+            ultimo_x := i;
+            ultimo_y := j;
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+   <strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">function TfrmMain</font></strong>.VerificaVitoria(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro): boolean;
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	//Verifica se o tabuleiro ainda tem itens n&atilde;o atingidos
+   <font color="#4169E1">for</font> i := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := 1 <font color="#4169E1">to</font> 10 <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	<font color="#4169E1">if</font> ((Tabuleiro[i, j]&gt;0) <font color="#4169E1">and</font> (Tabuleiro[i, j]&lt;1000)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+         	Result := false; //N&atilde;o &eacute; &aacute;gua e ainda n&atilde;o foi atingido
+            exit;
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+	Result := true;
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">function TfrmMain</font></strong>.VerificaTabuleiro(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro; x, y: integer): boolean;
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+   mini, maxi, minj, maxj: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	<font color="#4169E1">if</font> (x-1&lt;1)  <font color="#4169E1">then</font> mini:=1  <font color="#4169E1">else</font> mini := x-1;
+   <font color="#4169E1">if</font> (y-1&lt;1)  <font color="#4169E1">then</font> minj:=1  <font color="#4169E1">else</font> minj := y-1;
+   <font color="#4169E1">if</font> (x+1&gt;10) <font color="#4169E1">then</font> maxi:=10 <font color="#4169E1">else</font> maxi := x+1;
+   <font color="#4169E1">if</font> (y+1&gt;10) <font color="#4169E1">then</font> maxj:=10 <font color="#4169E1">else</font> maxj := y+1;
+
+	//Verifica se algo pode ser colocado nessa posi&ccedil;&atilde;o <font color="#4169E1">do</font> tabuleiro
+   <font color="#4169E1">for</font> i := mini <font color="#4169E1">to</font> maxi <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := minj <font color="#4169E1">to</font> maxj <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	<font color="#4169E1">if</font> (Tabuleiro[i, j]&lt;&gt;0) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+         	Result := false; //N&atilde;o pode ser colocado
+            exit;
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+	Result := true;
+<strong><font color="#4169E1">end</font></strong>;
+
+<strong><font color="#4169E1">function TfrmMain</font></strong>.Redundante(<strong><font color="#228B22">const</font></strong> Tabuleiro: TTabuleiro; x, y: integer): boolean;
+<strong><font color="#228B22">var</font></strong>
+	i, j: integer;
+   mini, maxi, minj, maxj: integer;
+<strong><font color="#4169E1">begin</font></strong>
+	<font color="#4169E1">if</font> (x-1&lt;1)  <font color="#4169E1">then</font> mini:=1  <font color="#4169E1">else</font> mini := x-1;
+   <font color="#4169E1">if</font> (y-1&lt;1)  <font color="#4169E1">then</font> minj:=1  <font color="#4169E1">else</font> minj := y-1;
+   <font color="#4169E1">if</font> (x+1&gt;10) <font color="#4169E1">then</font> maxi:=10 <font color="#4169E1">else</font> maxi := x+1;
+   <font color="#4169E1">if</font> (y+1&gt;10) <font color="#4169E1">then</font> maxj:=10 <font color="#4169E1">else</font> maxj := y+1;
+	//as regras <font color="#4169E1">do</font> batalha naval n&atilde;o permitem que
+	//barcos sejam colocados encostados, mesmo em diagonal
+   //Essa fun&ccedil;&atilde;o verifica se isso ocorre para que o computador fa&ccedil;a uma
+   //boa jogada (n&atilde;o redundante)
+   <font color="#4169E1">if</font> ((Tabuleiro[x, y]&lt;&gt;0) <font color="#4169E1">and</font> (Tabuleiro[x, y]&lt;&gt;1000)) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+   	Result := false; //N&atilde;o &eacute; redundante jogar aqui, pois vai acertar em algo
+      exit;
+   <strong><font color="#4169E1">end</font></strong>;
+	//Verifica se existem vizinhos j&aacute; acertados nessa posi&ccedil;&atilde;o <font color="#4169E1">do</font> tabuleiro
+   <font color="#4169E1">for</font> i := mini <font color="#4169E1">to</font> maxi <font color="#4169E1">do</font>
+   	<font color="#4169E1">for</font> j := minj <font color="#4169E1">to</font> maxj <font color="#4169E1">do</font> <strong><font color="#4169E1">begin</font></strong>
+      	<font color="#4169E1">if</font> (Tabuleiro[i, j]&gt;1000) <font color="#4169E1">then</font> <strong><font color="#4169E1">begin</font></strong>
+         	Result := true;
+            exit;
+         <strong><font color="#4169E1">end</font></strong>;
+      <strong><font color="#4169E1">end</font></strong>;
+	Result := false;
+<strong><font color="#4169E1">end</font></strong>;
+
+
+<strong><font color="#4169E1">end</font></strong>.
+</pre>
+</body>
+
+</html>
